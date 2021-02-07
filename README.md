@@ -1,0 +1,21 @@
+# RapidFire
+
+**express based web server framework**
+
+# Quick Start
+
+## Installation
+```
+npm i -S @luasenvy/rapidfire
+```
+
+## Startup Web Server
+```
+const { RapidFire } = require('@luasenvy/rapidfire')
+
+const rapidFire = new RapidFire({ host: 'localhost', port: 8000 })
+
+rapidFire.ignition()
+```
+
+`http://localhost:8000` will response `Cannot GET /`
