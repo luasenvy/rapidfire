@@ -1,5 +1,5 @@
 {
-  "name": "rapid-fire",
+  "name": "@luasenvy/rapidfire",
   "version": "0.0.1",
   "description": "express based web server framework",
   "main": "src/index.js",
@@ -38,7 +38,9 @@
     "url": "https://git.luas.kr/framework/rapid-fire.git"
   },
   "keywords": [
-    "rapid-fire"
+    "rapidfire",
+    "express",
+    "framework"
   ],
   "author": "luasenvy",
   "license": "BEERWARE"
