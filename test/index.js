@@ -3,7 +3,7 @@ const path = require('path')
 
 const consola = require('consola')
 
-const RapidFire = require('../src/index')
+const { RapidFire } = require('../src/index')
 
 const { Logger, MongoClient } = require('mongodb')
 const { Client: Elasticsearch } = require('@elastic/elasticsearch')

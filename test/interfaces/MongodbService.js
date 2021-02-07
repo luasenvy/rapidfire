@@ -1,4 +1,7 @@
-const Service = require('../../src/interfaces/Service')
+const {
+  Interfaces: { Service },
+} = require('../../src')
+
 const MongodbServiceLoader = require('../loaders/MongodbServiceLoader')
 
 class MongodbService extends Service {

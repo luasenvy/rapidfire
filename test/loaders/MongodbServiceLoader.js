@@ -1,7 +1,13 @@
+const {
+  Interfaces: { ServiceLoader },
+} = require('../../src')
+
 const { MongoClient } = require('mongodb')
 
-class MongodbServiceLoader {
-  constructor() {}
+class MongodbServiceLoader extends ServiceLoader {
+  constructor() {
+    super()
+  }
 
   load({ dbs, express, Service: MongodbService }) {
     const mongoClient = dbs.find(db => db instanceof MongoClient)

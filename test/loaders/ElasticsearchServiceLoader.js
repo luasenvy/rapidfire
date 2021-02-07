@@ -1,4 +1,6 @@
-const ServiceLoader = require('../../src/interfaces/ServiceLoader')
+const {
+  Interfaces: { ServiceLoader },
+} = require('../../src')
 
 const { Client: Elasticsearch } = require('@elastic/elasticsearch')
 

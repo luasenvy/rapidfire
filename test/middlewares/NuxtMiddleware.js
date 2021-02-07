@@ -1,6 +1,8 @@
 const { Nuxt, Builder } = require('nuxt')
 
-const Middleware = require('../../src/interfaces/Middleware')
+const {
+  Interfaces: { Middleware },
+} = require('../../src')
 
 class NuxtMiddleware extends Middleware {
   constructor() {

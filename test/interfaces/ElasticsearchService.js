@@ -1,4 +1,7 @@
-const Service = require('../../src/interfaces/Service')
+const {
+  Interfaces: { Service },
+} = require('../../src')
+
 const ElasticsearchServiceLoader = require('../loaders/ElasticsearchServiceLoader')
 
 class ElasticsearchService extends Service {
