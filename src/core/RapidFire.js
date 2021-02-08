@@ -46,7 +46,7 @@ class RapidFire {
 
     this.env = {
       paths: {
-        root: __dirname,
+        root: process.env.PWD,
       },
     }
 
@@ -129,6 +129,7 @@ class RapidFire {
     }
 
     this.app.use((err, req, res, next) => {
+      debugger
       consola.error(err)
       res.status(err.code || 500).send(err.message)
       next(err)
