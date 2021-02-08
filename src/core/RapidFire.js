@@ -101,7 +101,7 @@ class RapidFire {
         const Service = require(path.join(this.options.paths.services, serviceFilename))
 
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
-        const service = serviceLoader.load({ dbs: this.dbs, express, Service })
+        const service = await serviceLoader.load({ dbs: this.dbs, express, Service })
 
         // Register Service Default Variables
         service.$rapidfire = this
