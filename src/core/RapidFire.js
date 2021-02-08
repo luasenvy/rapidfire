@@ -55,7 +55,10 @@ class RapidFire {
     this.app = express()
     this.services = []
     this.middlewares = []
-    this.loaders = [new ServiceLoader()]
+
+    const defaultServiceLoader = new ServiceLoader()
+    defaultServiceLoader.$rapidfire = this
+    this.loaders = [defaultServiceLoader]
   }
 
   async ignition() {
