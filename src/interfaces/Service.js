@@ -17,6 +17,7 @@ class Service {
 
   constructor() {
     this._db = null
+    this._rapidfire = null
   }
 
   get db() {
@@ -24,6 +25,13 @@ class Service {
   }
   set db(db) {
     this._db = db
+  }
+
+  get $rapidfire() {
+    return this._rapidfire
+  }
+  set $rapidfire($rapidfire) {
+    this._rapidfire = $rapidfire
   }
 }
 

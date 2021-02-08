@@ -44,6 +44,12 @@ class RapidFire {
       ...customOptions,
     }
 
+    this.env = {
+      paths: {
+        root: __dirname,
+      }
+    }
+
     this.server = null
     this.dbs = dbs
     this.app = express()
@@ -55,7 +61,7 @@ class RapidFire {
   async ignition() {
     const { isDev } = this.options
 
-    if (isDev) global.$rapidFire = this
+    if (isDev) global.$rapidfire = this
 
     // ------------------------ Load Loaders
     if (this.options.paths.loaders) {
@@ -96,6 +102,9 @@ class RapidFire {
 
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
         const service = serviceLoader.load({ dbs: this.dbs, express, Service })
+
+        // Register Service Default Variables
+        service.$rapidfire = this
 
         this.app.use(service.router)
 
