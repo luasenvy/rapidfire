@@ -1,10 +1,22 @@
 class ServiceLoader {
-  constructor() {}
+  constructor() {
+    this.isDev = process.env.NODE_ENV !== 'production'
+    this._rapidfire = null
+  }
 
-  load({ db, express, Service }) {
+  load({ express, Service }) {
     const service = new Service({ router: express.Router() })
-    service.db = db
+
+    service.$rapidfire = this.$rapidfire
+
     return service
+  }
+
+  get $rapidfire() {
+    return this._rapidfire
+  }
+  set $rapidfire($rapidfire) {
+    this._rapidfire = $rapidfire
   }
 }
 

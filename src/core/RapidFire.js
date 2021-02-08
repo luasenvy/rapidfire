@@ -106,10 +106,7 @@ class RapidFire {
         const Service = require(path.join(this.options.paths.services, serviceFilename))
 
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
-        const service = await serviceLoader.load({ dbs: this.dbs, express, Service })
-
-        // Register Service Default Variables
-        service.$rapidfire = this
+        const service = await serviceLoader.load({ express, Service })
 
         this.app.use(service.router)
 
@@ -124,7 +121,6 @@ class RapidFire {
         const Middleware = require(path.join(this.options.paths.middlewares, middlewareFilename))
         const middleware = new Middleware()
 
-        // Register Middleware Default Variables
         middleware.$rapidfire = this
 
         await middleware.init()

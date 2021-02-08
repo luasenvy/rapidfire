@@ -16,15 +16,7 @@ class Service {
   static controller = controller
 
   constructor() {
-    this._db = null
     this._rapidfire = null
-  }
-
-  get db() {
-    return this._db
-  }
-  set db(db) {
-    this._db = db
   }
 
   get $rapidfire() {
