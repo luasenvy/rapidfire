@@ -129,7 +129,6 @@ class RapidFire {
     }
 
     this.app.use((err, req, res, next) => {
-      debugger
       consola.error(err)
       res.status(err.code || 500).send(err.message)
       next(err)
