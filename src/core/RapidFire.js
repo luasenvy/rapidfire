@@ -47,7 +47,7 @@ class RapidFire {
     this.env = {
       paths: {
         root: __dirname,
-      }
+      },
     }
 
     this.server = null
@@ -129,9 +129,9 @@ class RapidFire {
     }
 
     this.app.use((err, req, res, next) => {
-      consola.error(err.stack)
+      consola.error(err)
       res.status(err.code || 500).send(err.message)
-      next()
+      next(err)
     })
 
     // Listen the server
