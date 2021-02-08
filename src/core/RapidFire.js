@@ -68,7 +68,12 @@ class RapidFire {
       const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
       for (const loaderFilename of loaderFilenames) {
         const Loader = require(path.join(this.options.paths.loaders, loaderFilename))
-        this.loaders.push(new Loader())
+        const loader = new Loader()
+
+        // Register Middleware Default Variables
+        loader.$rapidfire = this
+
+        this.loaders.push(loader)
       }
     }
 
@@ -117,7 +122,10 @@ class RapidFire {
       const middlewareFilenames = fs.readdirSync(this.options.paths.middlewares)
       for (const middlewareFilename of middlewareFilenames) {
         const Middleware = require(path.join(this.options.paths.middlewares, middlewareFilename))
-        const middleware = new Middleware({})
+        const middleware = new Middleware()
+
+        // Register Middleware Default Variables
+        service.$rapidfire = this
 
         await middleware.init()
 
