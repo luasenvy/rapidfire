@@ -125,7 +125,7 @@ class RapidFire {
         const middleware = new Middleware()
 
         // Register Middleware Default Variables
-        service.$rapidfire = this
+        middleware.$rapidfire = this
 
         await middleware.init()
 
