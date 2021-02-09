@@ -120,6 +120,7 @@ class RapidFire {
     // ------------------------ Install Post Middlewares
     if (this.options.paths.middlewares) {
       const middlewareFilenames = fs.readdirSync(this.options.paths.middlewares)
+      const middlewares = []
       for (const middlewareFilename of middlewareFilenames) {
         const Middleware = require(path.join(this.options.paths.middlewares, middlewareFilename))
         const middleware = new Middleware()
@@ -128,10 +129,14 @@ class RapidFire {
 
         await middleware.init()
 
+        middlewares.push(middleware)
+      }
+
+      this.middlewares = middlewares.sort(({ order: a }, { order: b }) => a - b)
+
+      for (const middleware of this.middlewares) {
         if (middleware.pattern) this.app.use(pattern, (req, res, next) => middleware.pipe(req, res, next))
         else this.app.use((req, res, next) => middleware.pipe(req, res, next))
-
-        this.middlewares.push(middleware)
       }
     }
 

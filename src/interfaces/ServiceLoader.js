@@ -1,7 +1,7 @@
 class ServiceLoader {
   constructor() {
     this.isDev = process.env.NODE_ENV !== 'production'
-    this._rapidfire = null
+    this.$rapidfire = null
   }
 
   load({ express, Service }) {
@@ -10,13 +10,6 @@ class ServiceLoader {
     service.$rapidfire = this.$rapidfire
 
     return service
-  }
-
-  get $rapidfire() {
-    return this._rapidfire
-  }
-  set $rapidfire($rapidfire) {
-    this._rapidfire = $rapidfire
   }
 }
 

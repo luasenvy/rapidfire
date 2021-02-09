@@ -16,14 +16,7 @@ class Service {
   static controller = controller
 
   constructor() {
-    this._rapidfire = null
-  }
-
-  get $rapidfire() {
-    return this._rapidfire
-  }
-  set $rapidfire($rapidfire) {
-    this._rapidfire = $rapidfire
+    this.$rapidfire = null
   }
 }
 
