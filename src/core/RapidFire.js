@@ -137,12 +137,11 @@ class RapidFire {
 
     // eslint-disable-next-line no-unused-vars
     this.app.use((err, req, res, next) => {
-      if (err) {
-        consola.error(err)
+      consola.error(err)
 
-        if (err.code === 'ENOENT') return res.status(404).end()
-        res.status(err.code || 500).send(err.message)
-      }
+      if (res.headersSent) return next(err)
+
+      res.status(err.code || 500).send(err.message)
     })
 
     // Listen the server
