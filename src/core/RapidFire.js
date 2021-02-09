@@ -9,9 +9,10 @@ const consola = require('consola')
 
 const bodyParser = require('body-parser')
 
+const EventEmitter = require('events')
 const { ServiceLoader } = require('../interfaces')
 
-class RapidFire {
+class RapidFire extends EventEmitter {
   static constants = {
     defaults: {
       options: {
@@ -33,7 +34,9 @@ class RapidFire {
     },
   }
 
-  constructor({ dbs, ...options } = {}) {
+  constructor({ dbs = [], ...options } = {}) {
+    super()
+
     let customOptions = {}
 
     if (typeof options === 'string') customOptions = require(path.join(__dirname, options))
@@ -69,6 +72,7 @@ class RapidFire {
     // ------------------------ Load Loaders
     if (this.options.paths.loaders) {
       const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
+      const loaders = []
       for (const loaderFilename of loaderFilenames) {
         const Loader = require(path.join(this.options.paths.loaders, loaderFilename))
         const loader = new Loader()
@@ -76,8 +80,9 @@ class RapidFire {
         // Register Middleware Default Variables
         loader.$rapidfire = this
 
-        this.loaders.push(loader)
+        loaders.push(loader)
       }
+      this.loaders = loaders
     }
 
     // ------------------------ Built-in Request Pre Middlewares
@@ -105,6 +110,7 @@ class RapidFire {
     // ------------------------ Install Controller / Bind Service
     if (this.options.paths.services) {
       const serviceFilenames = fs.readdirSync(this.options.paths.services)
+      const services = []
       for (const serviceFilename of serviceFilenames) {
         const Service = require(path.join(this.options.paths.services, serviceFilename))
 
@@ -113,8 +119,9 @@ class RapidFire {
 
         this.app.use(service.router)
 
-        this.services.push(service)
+        services.push(service)
       }
+      this.services = services
     }
 
     // ------------------------ Install Post Middlewares
@@ -149,10 +156,16 @@ class RapidFire {
       res.status(err.code || 500).send(err.message)
     })
 
-    // Listen the server
-    this.server = this.app.listen(this.options.port, this.options.host)
+    this.server = this.app.listen(this.options.port, this.options.host, () => {
+      consola.ready(`Server listening on http://${this.options.host}:${this.options.port}`)
+      this.emit('open')
+    })
 
-    consola.ready(`Server listening on http://${this.options.host}:${this.options.port}`)
+    this.server.on('close', () => {
+      this.server = null
+      consola.info('Server Closed.')
+      this.emit('close')
+    })
   }
 
   extinguish() {

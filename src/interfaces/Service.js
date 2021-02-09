@@ -12,11 +12,9 @@ class Service {
   // Loader
   static loader = ServiceLoader
 
-  // Controller
-  static controller = controller
-
   constructor() {
     this.$rapidfire = null
+    this.controller = controller
   }
 }
 
