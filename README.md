@@ -19,3 +19,38 @@ rapidFire.ignition()
 ```
 
 `http://localhost:8000` will response `Cannot GET /`
+
+# Roadmap
+
+## Core
+- [x] Base Directory Structure
+- [x] Middleware Ordering & Piping
+
+## Interfaces
+- [x] Controller
+  * [ ] Range File Response (Built-in Function)
+- [x] ServiceLoader
+- [x] Service
+- [x] Middleware
+
+## Security
+
+# Documentation
+
+# Examples
+- [x] [Serve Plain HTML](https://github.com/luasenvy/rapidfire-example-serve-html)
+- [x] [Express Middleware Plugin](https://github.com/luasenvy/rapidfire-example-express-session)
+- [x] [Middleware Ordering](https://github.com/luasenvy/rapidfire-example-order-middlewares)
+- [x] [Elasticsearch](https://github.com/luasenvy/rapidfire-example-elasticsearch)
+- [x] [Mongodb](https://github.com/luasenvy/rapidfire-example-mongodb)
+- [x] [Nuxt](https://github.com/luasenvy/rapidfire-example-nuxt)
+- [x] [Vite](https://github.com/luasenvy/rapidfire-example-vite)
+  * [Vite#setting-up-the-dev-server](https://vitejs.dev/guide/ssr.html#setting-up-the-dev-server)
+  * [Vite#example-projects](https://vitejs.dev/guide/ssr.html#example-projects)
+  * Vite `MiddlewareMode` Need `entry-server.js` For SSR. But, Not Implemented In This Example.
+- [ ] Typescript
+- [ ] Svelte
+- [ ] Sapper
+
+# License
+BEERWARE
