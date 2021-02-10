@@ -3,7 +3,7 @@ class Middleware {
     this.isDev = process.env.NODE_ENV !== 'production'
     this.$rapidfire = null
     this.pattern = null
-    this.pipe = null
+    this.pipelines = []
     this.order = 0
   }
 
