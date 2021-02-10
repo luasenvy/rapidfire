@@ -1,7 +1,9 @@
+const Multer = require('multer')
+
 class Controller {
-  constructor({ multer }) {
-    this.isDev = process.env.NODE_ENV !== 'production'
-    this.multer = multer
+  constructor() {
+    this.$rapidfire = null
+    this.multer = Multer({ dest: path.join('/tmp', process.env.npm_package_name || '/rapid-fire-uploads/') })
   }
 }
 

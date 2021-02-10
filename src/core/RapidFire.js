@@ -10,7 +10,7 @@ const consola = require('consola')
 const bodyParser = require('body-parser')
 
 const EventEmitter = require('events')
-const { ServiceLoader } = require('../interfaces')
+const { ServiceLoader, Controller } = require('../interfaces')
 
 class RapidFire extends EventEmitter {
   static constants = {
@@ -18,6 +18,7 @@ class RapidFire extends EventEmitter {
       options: {
         isDev: process.env.NODE_ENV !== 'production',
         paths: {
+          controllers: '',
           services: '',
           middlewares: '',
           loaders: '',
@@ -56,6 +57,11 @@ class RapidFire extends EventEmitter {
     this.server = null
     this.dbs = dbs
     this.app = express()
+
+    const defaultController = new Controller()
+    defaultController.$rapidfire = this
+    this.controllers = [defaultController]
+
     this.services = []
     this.middlewares = []
 
@@ -68,6 +74,22 @@ class RapidFire extends EventEmitter {
     const { isDev } = this.options
 
     if (isDev) global.$rapidfire = this
+
+    // ------------------------ Load Contollers
+    if (this.options.paths.controllers) {
+      const controllerFilenames = fs.readdirSync(this.options.paths.controllers)
+      const controllers = []
+      for (const controllerFilename of controllerFilenames) {
+        const Controller = require(path.join(this.options.paths.controllers, controllerFilename))
+        const controller = new Controller()
+
+        // Register Middleware Default Variables
+        controller.$rapidfire = this
+
+        controllers.push(controller)
+      }
+      this.controllers = controllers
+    }
 
     // ------------------------ Load Loaders
     if (this.options.paths.loaders) {

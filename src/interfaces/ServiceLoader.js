@@ -8,6 +8,7 @@ class ServiceLoader {
     const service = new Service({ router: express.Router() })
 
     service.$rapidfire = this.$rapidfire
+    service.controller = this.$rapidfire.controllers.find(controller => controller instanceof Service.controller)
 
     return service
   }
