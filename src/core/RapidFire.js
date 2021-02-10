@@ -142,8 +142,11 @@ class RapidFire extends EventEmitter {
       this.middlewares = middlewares.sort(({ order: a }, { order: b }) => a - b)
 
       for (const middleware of this.middlewares) {
-        if (middleware.pattern) this.app.use(pattern, (req, res, next) => middleware.pipe(req, res, next))
-        else this.app.use((req, res, next) => middleware.pipe(req, res, next))
+        if (middleware.pipelines.length > 0) this.app.use(middleware.pipelines)
+        if (middleware.pipe instanceof Function) {
+          if (middleware.pattern) this.app.use(pattern, (req, res, next) => middleware.pipe(req, res, next))
+          else this.app.use((req, res, next) => middleware.pipe(req, res, next))
+        }
       }
     }
 
