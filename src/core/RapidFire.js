@@ -23,6 +23,7 @@ class RapidFire extends EventEmitter {
           middlewares: '',
           loaders: '',
         },
+        middlewares: [],
         querystringParser: {
           normalize: {
             true: true,
@@ -148,7 +149,7 @@ class RapidFire extends EventEmitter {
 
     // ------------------------ Install Post Middlewares
     if (this.options.paths.middlewares) {
-      const middlewareFilenames = fs.readdirSync(this.options.paths.middlewares)
+      const middlewareFilenames = this.options.middlewares.length <= 0 ? fs.readdirSync(this.options.paths.middlewares) : this.options.middlewares
       const middlewares = []
       for (const middlewareFilename of middlewareFilenames) {
         const Middleware = require(path.join(this.options.paths.middlewares, middlewareFilename))
@@ -161,7 +162,7 @@ class RapidFire extends EventEmitter {
         middlewares.push(middleware)
       }
 
-      this.middlewares = middlewares.sort(({ order: a }, { order: b }) => a - b)
+      this.middlewares = middlewares
 
       for (const middleware of this.middlewares) {
         for (const { pattern, pipe } of middleware.pipelines) {
