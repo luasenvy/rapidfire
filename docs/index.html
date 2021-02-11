@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Home</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">RapidFire</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Interfaces.html">Interfaces</a></li><li><a href="module-RapidFire.html">RapidFire</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p></p>
+                    <h1>Home</h1>
+                </header>
+                
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>RapidFire</h1>
+<p><strong>express based web server framework</strong></p>
+<h1>Quick Start</h1>
+<h2>Installation</h2>
+<pre class="prettyprint source"><code>npm i -S @luasenvy/rapidfire
+</code></pre>
+<h2>Startup Web Server</h2>
+<pre class="prettyprint source"><code>const { RapidFire } = require('@luasenvy/rapidfire')
+
+const rapidFire = new RapidFire({ host: 'localhost', port: 8000 })
+
+rapidFire.ignition()
+</code></pre>
+<p><code>http://localhost:8000</code> will response <code>Cannot GET /</code></p>
+<h1>Roadmap</h1>
+<h2>Core</h2>
+<ul>
+<li>[x] Base Directory Structure</li>
+<li>[x] Middleware Ordering &amp; Piping</li>
+</ul>
+<h2>Interfaces</h2>
+<ul>
+<li>[x] Controller</li>
+<li>[x] ServiceLoader</li>
+<li>[x] Service</li>
+<li>[x] Middleware</li>
+</ul>
+<h2>Security</h2>
+<h1>Documentation</h1>
+<h1>Examples</h1>
+<ul>
+<li>[x] <a href="https://github.com/luasenvy/rapidfire-example-serve-html">Serve Plain HTML</a></li>
+<li>[x] <a href="https://github.com/luasenvy/rapidfire-example-express-session">Express Middleware Plugin</a></li>
+<li>[x] <a href="https://github.com/luasenvy/rapidfire-example-order-middlewares">Middleware Ordering</a></li>
+<li>[x] <a href="https://github.com/luasenvy/rapidfire-example-elasticsearch">Elasticsearch</a></li>
+<li>[x] <a href="https://github.com/luasenvy/rapidfire-example-mongodb">Mongodb</a></li>
+<li>[x] <a href="https://github.com/luasenvy/rapidfire-example-nuxt">Nuxt</a></li>
+<li>[x] <a href="https://github.com/luasenvy/rapidfire-example-vite">Vite</a>
+<ul>
+<li><a href="https://vitejs.dev/guide/ssr.html#setting-up-the-dev-server">Vite#setting-up-the-dev-server</a></li>
+<li><a href="https://vitejs.dev/guide/ssr.html#example-projects">Vite#example-projects</a></li>
+<li>Vite <code>MiddlewareMode</code> Need <code>entry-server.js</code> For SSR. But, Not Implemented In This Example.</li>
+</ul>
+</li>
+<li>[ ] <s>Svelte</s></li>
+<li>[ ] <s>Typescript</s></li>
+<li>[ ] <s>Sapper</s></li>
+</ul>
+<h1>License</h1>
+<p>BEERWARE</p></article>
+    </section>
+
+
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>
