@@ -2,4 +2,9 @@ const { RapidFire } = require('./core')
 
 const Interfaces = require('./interfaces')
 
-module.exports = { RapidFire, Interfaces }
+module.exports = {
+  /** @module RapidFire */
+  RapidFire,
+  /** @module Interfaces */
+  Interfaces,
+}

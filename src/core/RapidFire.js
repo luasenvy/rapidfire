@@ -12,30 +12,60 @@ const bodyParser = require('body-parser')
 const EventEmitter = require('events')
 const { ServiceLoader, Controller } = require('../interfaces')
 
+/**
+ * @typedef   {Object}    RapidFireOptions
+ * @property  {Array}     isDev                RapidFire Development Mode
+ * @property  {Array}     dbs                  DB Clients
+ * @property  {Object}    paths                RapidFire Paths
+ * @property  {String}    paths.controllers    RapidFire User Define Controllers Path
+ * @property  {String}    paths.services       RapidFire User Define Services Path
+ * @property  {String}    paths.middlewares    RapidFire User Define Middlewares Path
+ * @property  {String}    paths.loaders        RapidFire User Define Loaders Path
+ * @property  {Array}     middlewares          RapidFire Ordered Middleware Filenames In `options.paths.middlewares`
+ */
+
+/**
+ * @class
+ * @extends EventEmitter
+ * @mermaid
+ *   graph TD;
+ *     EventEmitter --> RapidFire;
+ */
 class RapidFire extends EventEmitter {
-  static constants = {
-    defaults: {
-      options: {
-        isDev: process.env.NODE_ENV !== 'production',
-        paths: {
-          controllers: '',
-          services: '',
-          middlewares: '',
-          loaders: '',
-        },
-        middlewares: [],
-        querystringParser: {
-          normalize: {
-            true: true,
-            false: false,
-            null: null,
-            undefined,
-          },
+  /**
+   * RapidFire Default Options
+   *
+   * @static
+   * @type     {Object}
+   * @property {RapidFireOptions}     options      RapidFire Framework Default Constructor Options
+   */
+  static defaults = {
+    options: {
+      dbs: [],
+      isDev: process.env.NODE_ENV !== 'production',
+      paths: {
+        controllers: '',
+        services: '',
+        middlewares: '',
+        loaders: '',
+      },
+      middlewares: [],
+      querystringParser: {
+        normalize: {
+          true: true,
+          false: false,
+          null: null,
+          undefined,
         },
       },
     },
   }
 
+  /**
+   * Create RapidFire Framework
+   *
+   * @param  {RapidFireOptions}
+   */
   constructor({ dbs = [], ...options } = {}) {
     super()
 
@@ -44,33 +74,94 @@ class RapidFire extends EventEmitter {
     if (typeof options === 'string') customOptions = require(path.join(__dirname, options))
     else customOptions = options
 
+    /**
+     * RapidFire Framework Running Options
+     *
+     * @member
+     * @type     {Object}
+     * @property {RapidFireOptions}     options      RapidFire Framework Running Environment
+     */
     this.options = {
-      ...RapidFire.constants.defaults.options,
+      ...RapidFire.defaults.options,
       ...customOptions,
     }
 
+    /**
+     * RapidFire Framework Running Environments.
+     * This Options Is Not Configurable. Only Depends System Environments.
+     *
+     * @member
+     * @type     {Object}
+     * @property {Object}     paths         System Paths
+     * @property {Object}     paths.root    Current Working Directory
+     */
     this.env = {
       paths: {
         root: process.env.PWD,
       },
     }
 
+    /**
+     * {@link https://nodejs.org/api/http.html#http_class_http_server HttpServer}
+     *
+     * @member
+     * @type {HttpServer}
+     */
     this.server = null
+    /**
+     * DB Clients
+     *
+     * @member
+     * @type {Array}
+     */
     this.dbs = dbs
+    /**
+     * {@link https://expressjs.com/ko/api.html#app HttpServer}
+     *
+     * @member
+     * @type {ExpressApplicationInstance}
+     */
     this.app = express()
 
     const defaultController = new Controller()
     defaultController.$rapidfire = this
+    /**
+     * RapidFire Framework Running Controller Instances
+     *
+     * @member
+     * @type {Array}
+     */
     this.controllers = [defaultController]
 
+    /**
+     * RapidFire Framework Running Service Instances
+     *
+     * @member
+     * @type {Array}
+     */
     this.services = []
+    /**
+     * RapidFire Framework Running Middleware Instances
+     *
+     * @member
+     * @type {Array}
+     */
     this.middlewares = []
 
     const defaultServiceLoader = new ServiceLoader()
     defaultServiceLoader.$rapidfire = this
+    /**
+     * RapidFire Framework Running ServiceLoader Instances
+     *
+     * @member
+     * @type {Array}
+     */
     this.loaders = [defaultServiceLoader]
   }
 
+  /**
+   * StartUp RapidFire Framework.
+   */
   async ignition() {
     const { isDev } = this.options
 

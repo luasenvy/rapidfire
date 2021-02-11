@@ -28,7 +28,6 @@ rapidFire.ignition()
 
 ## Interfaces
 - [x] Controller
-  * [ ] Range File Response (Built-in Function)
 - [x] ServiceLoader
 - [x] Service
 - [x] Middleware
@@ -36,6 +35,8 @@ rapidFire.ignition()
 ## Security
 
 # Documentation
+
+[Documentation](https://docs.rapidfirejs.com/)
 
 # Examples
 - [x] [Serve Plain HTML](https://github.com/luasenvy/rapidfire-example-serve-html)
@@ -48,9 +49,9 @@ rapidFire.ignition()
   * [Vite#setting-up-the-dev-server](https://vitejs.dev/guide/ssr.html#setting-up-the-dev-server)
   * [Vite#example-projects](https://vitejs.dev/guide/ssr.html#example-projects)
   * Vite `MiddlewareMode` Need `entry-server.js` For SSR. But, Not Implemented In This Example.
-- [ ] Typescript
-- [ ] Svelte
-- [ ] Sapper
+- [ ] ~~Svelte~~
+- [ ] ~~Typescript~~
+- [ ] ~~Sapper~~
 
 # License
 BEERWARE

@@ -1,9 +1,22 @@
+/** @interface */
 class ServiceLoader {
+  /** Create Service */
   constructor() {
-    this.isDev = process.env.NODE_ENV !== 'production'
+    /**
+     * Running RapidFire Instance
+     *
+     * @type {RapidFire}
+     */
     this.$rapidfire = null
   }
 
+  /**
+   * Service Factory
+   *
+   * @param {Object} options
+   * @param {Express} options.express Express Module
+   * @param {Service} options.Service Service Class
+   */
   load({ express, Service }) {
     const service = new Service({ router: express.Router() })
 
