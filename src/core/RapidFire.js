@@ -276,12 +276,22 @@ class RapidFire extends EventEmitter {
 
     this.server = this.app.listen(this.options.port, this.options.host, () => {
       consola.ready(`Server listening on http://${this.options.host}:${this.options.port}`)
+      /**
+       * HttpServer Is Ready To Listen
+       *
+       * @event RapidFire#open
+       */
       this.emit('open')
     })
 
     this.server.on('close', () => {
       this.server = null
       consola.info('Server Closed.')
+      /**
+       * HttpServer Is Stop To Listen
+       *
+       * @event RapidFire#close
+       */
       this.emit('close')
     })
   }
