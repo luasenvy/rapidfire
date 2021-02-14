@@ -9,7 +9,6 @@ class MyService extends Service {
 }
 
 test('"Service" Interface implementation Test', () => {
-  const myService = new MyService()
   expect(MyService.loader).toEqual(ServiceLoader)
-  expect(myService.controller.constructor).toEqual(Controller)
+  expect(MyService.controller).toEqual(Controller)
 })

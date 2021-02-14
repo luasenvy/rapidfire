@@ -9,7 +9,7 @@ test('RapidFire Ignition Test', done => {
   rapidFire.on('close', () => {
     count += 1
 
-    if (count < 10) return rapidFire.ignition()
+    if (count < 5) return rapidFire.ignition()
     done()
   })
 
