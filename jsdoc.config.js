@@ -22,7 +22,6 @@ module.exports = {
     'better-docs': {
       logo: 'images/logo.svg',
       title: ':: RapidFire :: Express Based WebServer Framework',
-      trackingCode: 'tracking-code-which-will-go-to-the-HEAD',
       hideGenerator: false,
       navLinks: [{ label: 'Github', href: '//github.com/luasenvy/rapidfire' }],
     },
