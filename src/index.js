@@ -5,6 +5,9 @@ const Interfaces = require('./interfaces')
 module.exports = {
   /** @module RapidFire */
   RapidFire,
-  /** @module Interfaces */
+  /**
+   * @module Interfaces
+   * @module Interfaces:Controller
+   */
   Interfaces,
 }
