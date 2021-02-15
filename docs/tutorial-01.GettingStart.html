@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
-  
+  tracking-code-which-will-go-to-the-HEAD
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> ServiceLoader</title>
+  <title>:: RapidFire :: Express Based WebServer Framework 01.GettingStart</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -39,11 +39,11 @@
             <span aria-hidden="true"></span>
         </a>
         <div class="logo">
-            
              
-                <a href="index.html">
-                    <h1 class="navbar-item">RapidFire</h1>
+                <a class="image" href="index.html">
+                    <img src="images/logo.svg" alt="logo">
                 </a>
+            
             
         </div>
         <div class="menu">
@@ -64,26 +64,43 @@
                     <div class="dropdown-menu">
                         <div class="dropdown-content">
                         
-                            <a class="dropdown-item" href="tutorial-ControllerAndService.html">
-                                ControllerAndService
+                            <a class="dropdown-item" href="tutorial-01.GettingStart.html">
+                                01.GettingStart
                             </a>
                         
-                            <a class="dropdown-item" href="tutorial-Database.html">
-                                Database
+                            <a class="dropdown-item" href="tutorial-02.ControllerAndService.html">
+                                02.ControllerAndService
                             </a>
                         
-                            <a class="dropdown-item" href="tutorial-Middleware_.html">
-                                Middleware
+                            <a class="dropdown-item" href="tutorial-03.Middleware.html">
+                                03.Middleware
                             </a>
                         
-                            <a class="dropdown-item" href="tutorial-ServiceLoader_.html">
-                                ServiceLoader
+                            <a class="dropdown-item" href="tutorial-04.ServiceLoader.html">
+                                04.ServiceLoader
+                            </a>
+                        
+                            <a class="dropdown-item" href="tutorial-05.UsingDatabase.html">
+                                05.UsingDatabase
+                            </a>
+                        
+                            <a class="dropdown-item" href="tutorial-99.Examples.html">
+                                99.Examples
                             </a>
                         
                         </div>
                     </div>
                 </div>
                 
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="//github.com/luasenvy/rapidfire"
+                        >
+                            Github
+                        </a>
+                    
                 
                 
             </div>
@@ -98,7 +115,7 @@
             
             <nav>
                 
-                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-ControllerAndService.html">ControllerAndService</a></li><li><a href="tutorial-Database.html">Database</a></li><li><a href="tutorial-Middleware_.html">Middleware</a></li><li><a href="tutorial-ServiceLoader_.html">ServiceLoader</a></li></ul></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
                 
             </nav>
         </div>
@@ -106,60 +123,22 @@
             <div class="content">
                 <header class="page-title">
                     <p>Tutorial</p>
-                    <h1>ServiceLoader</h1>
+                    <h1>01.GettingStart</h1>
                 </header>
                 <section>
 
 <article>
-    <h2>ServiceLoader</h2>
-<p><code>ServiceLoader</code> Is Useful When You Want To Change Service Contructor Parameter. And <code>User Define ServiceLoader</code> Must Be Place In Rapidfire Configuration <code>paths.loaders</code> Path.</p>
-<pre class="prettyprint source lang-javascript"><code>const {
-  Interfaces: { ServiceLoader },
-} = require('@luasenvy/rapidfire')
-
-class MyServiceLoader extends ServiceLoader {
-  constructor() {
-    super()
-  }
-
-  // Implement `load` Function. Paramter Is 'express' And 'Service'.
-  //   The `Service` Is Delivered To The Set By This Loader.
-  //   This Function Is Required.
-  load({ express, Service }) {
-    // You Can Define AnyThing. But Must Return `Service` Instance.
-    return new Service({ some: 'thing', you: 'need', router: express.Router() })
-  }
-}
-
-module.exports = MyServiceLoader
+    <h2>Installation</h2>
+<pre class="prettyprint source"><code>npm i -S @luasenvy/rapidfire
 </code></pre>
-<h3>Set <code>ServiceLoader</code></h3>
-<p>Just Change <code>loader</code> Static Property.</p>
-<pre class="prettyprint source lang-javascript"><code>const {
-  Interfaces: { Service },
-} = require('@luasenvy/rapidfire')
+<h2>Startup Web Server</h2>
+<pre class="prettyprint source"><code>const { RapidFire } = require('@luasenvy/rapidfire')
 
-const MyServiceLoader = require('../some/your/loaders/path/MyServiceLoader')
+const rapidFire = new RapidFire({ host: 'localhost', port: 8000 })
 
-class MyService extends Service {
-  static loader = MyServiceLoader
-
-  constructor({ some, you, router }) {
-    super()
-
-    router.get('/hello', (req, res, next) => this.sayThingNeed(req, res).catch(next))
-
-    // Now, You Can Use Custom Paramters.
-    this.thingneed = some + you
-  }
-
-  sayThingNeed(req, res) {
-    res.send(this.thingneed)
-  }
-}
-
-module.exports = MyService
+rapidFire.ignition()
 </code></pre>
+<p><code>http://localhost:8000</code> will response <code>Cannot GET /</code></p>
 </article>
 
 </section>

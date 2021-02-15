@@ -9,13 +9,22 @@ module.exports = {
     encoding: 'utf8',
     destination: 'docs',
     recurse: true,
-    tutorials: 'tutorials',
+    tutorials: 'docs-src/tutorials',
     readme: 'README.md',
     template: 'node_modules/better-docs',
   },
   templates: {
+    default: {
+      staticFiles: {
+        include: ['docs-src/statics'],
+      },
+    },
     'better-docs': {
-      name: 'RapidFire',
+      logo: 'images/logo.svg',
+      title: ':: RapidFire :: Express Based WebServer Framework',
+      trackingCode: 'tracking-code-which-will-go-to-the-HEAD',
+      hideGenerator: false,
+      navLinks: [{ label: 'Github', href: '//github.com/luasenvy/rapidfire' }],
     },
   },
 }

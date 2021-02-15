@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   tracking-code-which-will-go-to-the-HEAD
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>:: RapidFire :: Express Based WebServer Framework interfaces/Middleware.js</title>
+  <title>:: RapidFire :: Express Based WebServer Framework 04.ServiceLoader</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -111,66 +109,77 @@
 </div>
     <div id="main">
         <div
-            class="sidebar "
+            class="sidebar tutorials"
             id="sidebarNav"
         >
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Interfaces.html">Interfaces</a></li><li><a href="module-RapidFire.html">RapidFire</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
                 
             </nav>
         </div>
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>interfaces/Middleware.js</h1>
+                    <p>Tutorial</p>
+                    <h1>04.ServiceLoader</h1>
                 </header>
-                
+                <section>
 
+<article>
+    <h2>ServiceLoader</h2>
+<p><code>ServiceLoader</code> Is Useful When You Want To Change Service Contructor Parameter. And <code>User Define ServiceLoader</code> Must Be Place In Rapidfire Configuration <code>paths.loaders</code> Path.</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { ServiceLoader },
+} = require('@luasenvy/rapidfire')
 
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @typedef {Object} Pipeline
- * @property {(String|RegExp)} pattern {@link https://expressjs.com/ko/api.html#path-examples ExpressPath}
- * @property {Function} Pipe {@link https://expressjs.com/ko/api.html#middleware-callback-function-examples ExpressMiddlewareCallback}
- */
-
-/** @interface */
-class Middleware {
-  /** Create Middleware */
+class MyServiceLoader extends ServiceLoader {
   constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
-    /**
-     * Tasks Of Middleware.
-     *
-     * @type {Pipeline[]}
-     */
-    this.pipelines = []
+    super()
   }
 
-  /**
-   * Initialize Function
-   */
-  async init() {}
+  // Implement `load` Function. Paramter Is 'express' And 'Service'.
+  //   The `Service` Is Delivered To The Set By This Loader.
+  //   This Function Is Required.
+  load({ express, Service }) {
+    // You Can Define AnyThing. But Must Return `Service` Instance.
+    return new Service({ some: 'thing', you: 'need', router: express.Router() })
+  }
 }
 
-module.exports = Middleware
+module.exports = MyServiceLoader
 </code></pre>
-        </article>
-    </section>
+<h3>Set <code>ServiceLoader</code></h3>
+<p>Just Change <code>loader</code> Static Property.</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Service },
+} = require('@luasenvy/rapidfire')
 
+const MyServiceLoader = require('../some/your/loaders/path/MyServiceLoader')
 
+class MyService extends Service {
+  static loader = MyServiceLoader
 
+  constructor({ some, you, router }) {
+    super()
+
+    router.get('/hello', (req, res, next) => this.sayThingNeed(req, res).catch(next))
+
+    // Now, You Can Use Custom Paramters.
+    this.thingneed = some + you
+  }
+
+  sayThingNeed(req, res) {
+    res.send(this.thingneed)
+  }
+}
+
+module.exports = MyService
+</code></pre>
+</article>
+
+</section>
 
             </div>
             

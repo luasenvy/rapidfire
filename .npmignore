@@ -2,4 +2,5 @@
 node_modules/
 test/
 docs/
+docs-src/
 jsdoc.config.js

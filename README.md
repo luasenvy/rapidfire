@@ -46,9 +46,9 @@ rapidFire.ignition()
 - [x] [Mongodb](https://github.com/luasenvy/rapidfire-example-mongodb)
 - [x] [Nuxt](https://github.com/luasenvy/rapidfire-example-nuxt)
 - [x] [Vite](https://github.com/luasenvy/rapidfire-example-vite)
+  * Vite `MiddlewareMode` Need `entry-server.js` For SSR. But, Not Implemented In This Example.
   * [Vite#setting-up-the-dev-server](https://vitejs.dev/guide/ssr.html#setting-up-the-dev-server)
   * [Vite#example-projects](https://vitejs.dev/guide/ssr.html#example-projects)
-  * Vite `MiddlewareMode` Need `entry-server.js` For SSR. But, Not Implemented In This Example.
 - [ ] ~~Svelte~~
 - [ ] ~~Typescript~~
 - [ ] ~~Sapper~~

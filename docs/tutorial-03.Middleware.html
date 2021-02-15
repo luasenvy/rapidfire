@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
-  
+  tracking-code-which-will-go-to-the-HEAD
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Database</title>
+  <title>:: RapidFire :: Express Based WebServer Framework 03.Middleware</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -39,11 +39,11 @@
             <span aria-hidden="true"></span>
         </a>
         <div class="logo">
-            
              
-                <a href="index.html">
-                    <h1 class="navbar-item">RapidFire</h1>
+                <a class="image" href="index.html">
+                    <img src="images/logo.svg" alt="logo">
                 </a>
+            
             
         </div>
         <div class="menu">
@@ -64,26 +64,43 @@
                     <div class="dropdown-menu">
                         <div class="dropdown-content">
                         
-                            <a class="dropdown-item" href="tutorial-ControllerAndService.html">
-                                ControllerAndService
+                            <a class="dropdown-item" href="tutorial-01.GettingStart.html">
+                                01.GettingStart
                             </a>
                         
-                            <a class="dropdown-item" href="tutorial-Database.html">
-                                Database
+                            <a class="dropdown-item" href="tutorial-02.ControllerAndService.html">
+                                02.ControllerAndService
                             </a>
                         
-                            <a class="dropdown-item" href="tutorial-Middleware_.html">
-                                Middleware
+                            <a class="dropdown-item" href="tutorial-03.Middleware.html">
+                                03.Middleware
                             </a>
                         
-                            <a class="dropdown-item" href="tutorial-ServiceLoader_.html">
-                                ServiceLoader
+                            <a class="dropdown-item" href="tutorial-04.ServiceLoader.html">
+                                04.ServiceLoader
+                            </a>
+                        
+                            <a class="dropdown-item" href="tutorial-05.UsingDatabase.html">
+                                05.UsingDatabase
+                            </a>
+                        
+                            <a class="dropdown-item" href="tutorial-99.Examples.html">
+                                99.Examples
                             </a>
                         
                         </div>
                     </div>
                 </div>
                 
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="//github.com/luasenvy/rapidfire"
+                        >
+                            Github
+                        </a>
+                    
                 
                 
             </div>
@@ -98,7 +115,7 @@
             
             <nav>
                 
-                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-ControllerAndService.html">ControllerAndService</a></li><li><a href="tutorial-Database.html">Database</a></li><li><a href="tutorial-Middleware_.html">Middleware</a></li><li><a href="tutorial-ServiceLoader_.html">ServiceLoader</a></li></ul></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
                 
             </nav>
         </div>
@@ -106,72 +123,43 @@
             <div class="content">
                 <header class="page-title">
                     <p>Tutorial</p>
-                    <h1>Database</h1>
+                    <h1>03.Middleware</h1>
                 </header>
                 <section>
 
 <article>
-    <h2>Using Database Connection In RapidFire</h2>
-<p><code>RapidFire</code> Is Not Care About Database Connection. It Just Provide <code>dbs</code> Property.</p>
-<h3>So, How?</h3>
-<p>You Can Use Implement In <code>ServiceLoader</code> With <code>$rapidfire</code> Property.</p>
-<p>For Example, When You Use Some Kind Of <code>Mongodb Client</code>.</p>
-<h4>Implement &quot;ServiceLoader&quot;</h4>
+    <h2>Middleware</h2>
 <pre class="prettyprint source lang-javascript"><code>const {
-  Interfaces: { ServiceLoader },
+  Interfaces: { Middleware },
 } = require('@luasenvy/rapidfire')
 
-const { MongoClient } = require('mongodb')
-
-class MyServiceLoader extends ServiceLoader {
-  constructor() {
+class MyMiddleware extends Middleware {
+  cunstructor() {
     super()
-  }
 
-  load({ express, Service }) {
-    // Find MongoClient.
-    //   `$rapidfire` Property Is Setted After `super()` In Contructor.
-    const dbClient = this.$rapidfire.dbs.find(db => db instanceof MongoClient)
+    // Pipelines Is Defined Array From Parent `Middleware` Interface.
+    //   Pipeline Is Required 'pipe' Property
+    //   'pattern' property is optional.
+    //   More Information: https://expressjs.com/ko/api.html#app.use
+    this.pipelines.push({ pipe: this.pipeline })
 
-    // Pass `dbClient` Paramter.
-    //   Be Careful. `ServiceLoader` Is Singletone. But `load()` Function Is Called As Many As The Number Of `Services` Using This `ServiceLoader`.
-    const db = dbClient.db('database_name')
-    return new Service({ db, router: express.Router() })
+    // Middleware Can Have Many Pipeline.
+    this.pipelines.push({ pipe: this.secondPipeline })
+    this.pipelines.push({ pipe: this.ThirdPipeline })
   }
 }
 
-module.exports = MyServiceLoader
+module.exports = MyMiddleware
 </code></pre>
-<h4>Set &quot;ServiceLoader&quot; And Use &quot;Your Database Connection&quot;.</h4>
-<pre class="prettyprint source lang-javascript"><code>const {
-  Interfaces: { Service },
-} = require('@luasenvy/rapidfire')
-
-const MyServiceLoader = require('../some/your/loaders/path/MyServiceLoader')
-
-class MyService extends Service {
-  static loader = MyServiceLoader
-
-  // `db` Will Be `Mongodb Database`
-  constructor({ db, router }) {
-    super()
-
-    router.get('/hello', (req, res, next) => this.usingDbClient(req, res).catch(next))
-
-    this.collection = db.collection('collection_name')
-  }
-
-  async usingDbClient(req, res) {
-    const rows = await this.collection.find({}).toArray()
-    res.send({ rows })
-  }
-}
-
-module.exports = MyService
-</code></pre>
-<h3>Initialize With &quot;dbs&quot; Property.</h3>
-<pre class="prettyprint source lang-javascript"><code>const rapidFire = new RapidFire({ dbs: [mongodbClient], services: '/path/your/services', loaders: '/path/your/loaders' })
-rapidFire.ignition()
+<h3>Ordering Middlewares</h3>
+<p>You Can Ordering With <code>middlewares</code> Property. If You Define <code>middlewares</code> Property, RapidFire Is Load Only Defined Middlewares. This Way Also Need <code>paths.middlewares</code>.</p>
+<p>If Only <code>path.middlewares</code> Is Defined Without <code>middlewares</code> Property, RapidFire Is Using <code>fs.readdirSync(path.middlewares)</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>new RapidFire({
+  path: {
+    middlewares: 'path/your/middlewares',
+  },
+  middlewares: ['firstMiddleware', 'secondMiddleware', 'thirdMiddleware'],
+})
 </code></pre>
 </article>
 

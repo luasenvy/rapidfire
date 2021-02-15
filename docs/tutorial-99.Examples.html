@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   tracking-code-which-will-go-to-the-HEAD
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>:: RapidFire :: Express Based WebServer Framework interfaces/Middleware.js</title>
+  <title>:: RapidFire :: Express Based WebServer Framework 99.Examples</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -111,66 +109,44 @@
 </div>
     <div id="main">
         <div
-            class="sidebar "
+            class="sidebar tutorials"
             id="sidebarNav"
         >
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Interfaces.html">Interfaces</a></li><li><a href="module-RapidFire.html">RapidFire</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
                 
             </nav>
         </div>
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>interfaces/Middleware.js</h1>
+                    <p>Tutorial</p>
+                    <h1>99.Examples</h1>
                 </header>
-                
+                <section>
 
+<article>
+    <h2>Examples</h2>
+<ul>
+<li><a href="https://github.com/luasenvy/rapidfire-example-serve-html">Serve Plain HTML</a></li>
+<li><a href="https://github.com/luasenvy/rapidfire-example-express-session">Express Middleware Plugin</a></li>
+<li><a href="https://github.com/luasenvy/rapidfire-example-order-middlewares">Middleware Ordering</a></li>
+<li><a href="https://github.com/luasenvy/rapidfire-example-elasticsearch">Elasticsearch</a></li>
+<li><a href="https://github.com/luasenvy/rapidfire-example-mongodb">Mongodb</a></li>
+<li><a href="https://github.com/luasenvy/rapidfire-example-nuxt">Nuxt</a></li>
+<li><a href="https://github.com/luasenvy/rapidfire-example-vite">Vite</a>
+<ul>
+<li>Vite <code>MiddlewareMode</code> Need <code>entry-server.js</code> For SSR. But, Not Implemented In This Example.</li>
+<li><a href="https://vitejs.dev/guide/ssr.html#setting-up-the-dev-server">Vite#setting-up-the-dev-server</a></li>
+<li><a href="https://vitejs.dev/guide/ssr.html#example-projects">Vite#example-projects</a></li>
+</ul>
+</li>
+</ul>
+</article>
 
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @typedef {Object} Pipeline
- * @property {(String|RegExp)} pattern {@link https://expressjs.com/ko/api.html#path-examples ExpressPath}
- * @property {Function} Pipe {@link https://expressjs.com/ko/api.html#middleware-callback-function-examples ExpressMiddlewareCallback}
- */
-
-/** @interface */
-class Middleware {
-  /** Create Middleware */
-  constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
-    /**
-     * Tasks Of Middleware.
-     *
-     * @type {Pipeline[]}
-     */
-    this.pipelines = []
-  }
-
-  /**
-   * Initialize Function
-   */
-  async init() {}
-}
-
-module.exports = Middleware
-</code></pre>
-        </article>
-    </section>
-
-
-
+</section>
 
             </div>
             
