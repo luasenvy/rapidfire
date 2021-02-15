@@ -9,6 +9,7 @@ module.exports = {
     encoding: 'utf8',
     destination: 'docs',
     recurse: true,
+    tutorials: 'tutorials',
     readme: 'README.md',
     template: 'node_modules/better-docs',
   },

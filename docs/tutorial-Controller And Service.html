@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> interfaces/Service.js</title>
+  <title> Controller And Service</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -66,12 +64,12 @@
                     <div class="dropdown-menu">
                         <div class="dropdown-content">
                         
-                            <a class="dropdown-item" href="tutorial-ControllerAndService.html">
-                                ControllerAndService
+                            <a class="dropdown-item" href="tutorial-Controller And Service.html">
+                                Controller And Service
                             </a>
                         
-                            <a class="dropdown-item" href="tutorial-Database.html">
-                                Database
+                            <a class="dropdown-item" href="tutorial-Database Connection.html">
+                                Database Connection
                             </a>
                         
                             <a class="dropdown-item" href="tutorial-Middleware_.html">
@@ -94,74 +92,96 @@
 </div>
     <div id="main">
         <div
-            class="sidebar "
+            class="sidebar tutorials"
             id="sidebarNav"
         >
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Interfaces.html">Interfaces</a></li><li><a href="module-RapidFire.html">RapidFire</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-Controller And Service.html">Controller And Service</a></li><li><a href="tutorial-Database Connection.html">Database Connection</a></li><li><a href="tutorial-Middleware_.html">Middleware</a></li><li><a href="tutorial-ServiceLoader_.html">ServiceLoader</a></li></ul></div>
                 
             </nav>
         </div>
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>interfaces/Service.js</h1>
+                    <p>Tutorial</p>
+                    <h1>Controller And Service</h1>
                 </header>
-                
+                <section>
 
+<article>
+    <h2>Controller</h2>
+<p>Controller Is Util Of Service. You Can Define Anything:</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Controller },
+} = require('@luasenvy/rapidfire')
 
+class MyController extends Controller {
+  cunstructor() {
+    super()
+  }
 
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const ServiceLoader = require('./ServiceLoader')
-const Controller = require('./Controller')
-
-/** @interface */
-class Service {
-  /**
-   * ServiceLoader Class
-   *
-   * @static
-   * @type {ServiceLoader}
-   */
-  static loader = ServiceLoader
-
-  /**
-   * Controller Class
-   *
-   * @static
-   * @type {Controller}
-   */
-  static controller = Controller
-
-  /** Create Service */
-  constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
-    /**
-     * Controller Instance
-     *
-     * @type {Controller}
-     */
-    this.controller = null
+  sendFile(res) {
+    res.sendFile('/something/file')
   }
 }
 
-module.exports = Service
+module.exports = MyController
 </code></pre>
-        </article>
-    </section>
+<h2>Service</h2>
+<p>You Can Mapping <code>URI</code> And <code>Function</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Service },
+} = require('@luasenvy/rapidfire')
 
+class MyService extends Service {
+  constructor({ router }) {
+    super()
 
+    // Mapping With URI Via `router` Parameter.
+    router.get('/hello', (req, res, next) => this.sayWorld(req, res).catch(next))
+  }
 
+  // Implement Your Service Function
+  sayWorld(req, res) {
+    res.send('world')
+  }
+}
+
+module.exports = MyService
+</code></pre>
+<h3>Change Controller</h3>
+<p>If You Want Change Controller Instead Of <code>Built-In Controller</code>. Just Redefine static property <code>controller</code>. And <code>User Define Controller</code> Must Be Place In Rapidfire Configuration <code>paths.controllers</code> Path.</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Service },
+} = require('@luasenvy/rapidfire')
+
+// Controller Must Class. Not Instance.
+const MyController = require('../some/your/controllers/path/MyController')
+
+class MyService extends Service {
+  static controller = MyController
+
+  constructor({ router }) {
+    super()
+
+    // Mapping With URI Via `router` Parameter.
+    router.get('/my-controller-send-file', (req, res, next) => this.sendFile(req, res).catch(next))
+  }
+
+  // Implement Your Service Function
+  sendFile(req, res) {
+    // `this.controller` Will Be `MyController` Instance.
+    this.controller.sendFile(req, res)
+  }
+}
+
+module.exports = MyService
+</code></pre>
+</article>
+
+</section>
 
             </div>
             

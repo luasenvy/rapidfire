@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> interfaces/Service.js</title>
+  <title> Database Connection</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -66,12 +64,12 @@
                     <div class="dropdown-menu">
                         <div class="dropdown-content">
                         
-                            <a class="dropdown-item" href="tutorial-ControllerAndService.html">
-                                ControllerAndService
+                            <a class="dropdown-item" href="tutorial-Controller And Service.html">
+                                Controller And Service
                             </a>
                         
-                            <a class="dropdown-item" href="tutorial-Database.html">
-                                Database
+                            <a class="dropdown-item" href="tutorial-Database Connection.html">
+                                Database Connection
                             </a>
                         
                             <a class="dropdown-item" href="tutorial-Middleware_.html">
@@ -94,74 +92,90 @@
 </div>
     <div id="main">
         <div
-            class="sidebar "
+            class="sidebar tutorials"
             id="sidebarNav"
         >
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Interfaces.html">Interfaces</a></li><li><a href="module-RapidFire.html">RapidFire</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-Controller And Service.html">Controller And Service</a></li><li><a href="tutorial-Database Connection.html">Database Connection</a></li><li><a href="tutorial-Middleware_.html">Middleware</a></li><li><a href="tutorial-ServiceLoader_.html">ServiceLoader</a></li></ul></div>
                 
             </nav>
         </div>
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>interfaces/Service.js</h1>
+                    <p>Tutorial</p>
+                    <h1>Database Connection</h1>
                 </header>
-                
+                <section>
 
+<article>
+    <h2>Using Database Connection In RapidFire</h2>
+<p><code>RapidFire</code> Is Not Care About Database Connection. It Just Provide <code>dbs</code> Property.</p>
+<h3>So, How?</h3>
+<p>You Can Use Implement In <code>ServiceLoader</code> With <code>$rapidfire</code> Property.</p>
+<p>For Example, When You Use Some Kind Of <code>Mongodb Client</code>.</p>
+<h4>Implement &quot;ServiceLoader&quot;</h4>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { ServiceLoader },
+} = require('@luasenvy/rapidfire')
 
+const { MongoClient } = require('mongodb')
 
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const ServiceLoader = require('./ServiceLoader')
-const Controller = require('./Controller')
-
-/** @interface */
-class Service {
-  /**
-   * ServiceLoader Class
-   *
-   * @static
-   * @type {ServiceLoader}
-   */
-  static loader = ServiceLoader
-
-  /**
-   * Controller Class
-   *
-   * @static
-   * @type {Controller}
-   */
-  static controller = Controller
-
-  /** Create Service */
+class MyServiceLoader extends ServiceLoader {
   constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
-    /**
-     * Controller Instance
-     *
-     * @type {Controller}
-     */
-    this.controller = null
+    super()
+  }
+
+  load({ express, Service }) {
+    // Find MongoClient.
+    //   `$rapidfire` Property Is Setted After `super()` In Contructor.
+    const dbClient = this.$rapidfire.dbs.find(db => db instanceof MongoClient)
+
+    // Pass `dbClient` Paramter.
+    //   Be Careful. `ServiceLoader` Is Singletone. But `load()` Function Is Called As Many As The Number Of `Services` Using This `ServiceLoader`.
+    const db = dbClient.db('database_name')
+    return new Service({ db, router: express.Router() })
   }
 }
 
-module.exports = Service
+module.exports = MyServiceLoader
 </code></pre>
-        </article>
-    </section>
+<h4>Set &quot;ServiceLoader&quot; And Use &quot;Your Database Connection&quot;.</h4>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Service },
+} = require('@luasenvy/rapidfire')
 
+const MyServiceLoader = require('../some/your/loaders/path/MyServiceLoader')
 
+class MyService extends Service {
+  static loader = MyServiceLoader
 
+  // `db` Will Be `Mongodb Database`
+  constructor({ db, router }) {
+    super()
+
+    router.get('/hello', (req, res, next) => this.usingDbClient(req, res).catch(next))
+
+    this.collection = db.collection('collection_name')
+  }
+
+  async usingDbClient(req, res) {
+    const rows = await this.collection.find({}).toArray()
+    res.send({ rows })
+  }
+}
+
+module.exports = MyService
+</code></pre>
+<h3>Initialize With &quot;dbs&quot; Property.</h3>
+<pre class="prettyprint source lang-javascript"><code>const rapidFire = new RapidFire({ dbs: [mongodbClient], services: '/path/your/services', loaders: '/path/your/loaders' })
+rapidFire.ignition()
+</code></pre>
+</article>
+
+</section>
 
             </div>
             

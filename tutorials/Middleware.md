@@ -1,0 +1,40 @@
+## Middleware
+
+```javascript
+const {
+  Interfaces: { Middleware },
+} = require('@luasenvy/rapidfire')
+
+class MyMiddleware extends Middleware {
+  cunstructor() {
+    super()
+
+    // Pipelines Is Defined Array From Parent `Middleware` Interface.
+    //   Pipeline Is Required 'pipe' Property
+    //   'pattern' property is optional.
+    //   More Information: https://expressjs.com/ko/api.html#app.use
+    this.pipelines.push({ pipe: this.pipeline })
+
+    // Middleware Can Have Many Pipeline.
+    this.pipelines.push({ pipe: this.secondPipeline })
+    this.pipelines.push({ pipe: this.ThirdPipeline })
+  }
+}
+
+module.exports = MyMiddleware
+```
+
+### Ordering Middlewares
+
+You Can Ordering With `middlewares` Property. If You Define `middlewares` Property, RapidFire Is Load Only Defined Middlewares. This Way Also Need `paths.middlewares`.
+
+If Only `path.middlewares` Is Defined Without `middlewares` Property, RapidFire Is Using `fs.readdirSync(path.middlewares)`.
+
+```javascript
+new RapidFire({
+  path: {
+    middlewares: 'path/your/middlewares',
+  },
+  middlewares: ['firstMiddleware', 'secondMiddleware', 'thirdMiddleware'],
+})
+```

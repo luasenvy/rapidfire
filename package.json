@@ -30,7 +30,7 @@
     "prettier": "^2.2.1"
   },
   "scripts": {
-    "docs": "rm -rf docs && jsdoc -c jsdoc.config.js",
+    "docs": "rm -rf `ls -rtd docs/* | grep -v -e CNAME` && jsdoc -c jsdoc.config.js",
     "test": "jest --rootDir test"
   },
   "repository": {

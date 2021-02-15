@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> interfaces/Service.js</title>
+  <title> Middleware</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -94,74 +92,61 @@
 </div>
     <div id="main">
         <div
-            class="sidebar "
+            class="sidebar tutorials"
             id="sidebarNav"
         >
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Interfaces.html">Interfaces</a></li><li><a href="module-RapidFire.html">RapidFire</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-ControllerAndService.html">ControllerAndService</a></li><li><a href="tutorial-Database.html">Database</a></li><li><a href="tutorial-Middleware_.html">Middleware</a></li><li><a href="tutorial-ServiceLoader_.html">ServiceLoader</a></li></ul></div>
                 
             </nav>
         </div>
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>interfaces/Service.js</h1>
+                    <p>Tutorial</p>
+                    <h1>Middleware</h1>
                 </header>
-                
+                <section>
 
+<article>
+    <h2>Middleware</h2>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Middleware },
+} = require('@luasenvy/rapidfire')
 
+class MyMiddleware extends Middleware {
+  cunstructor() {
+    super()
 
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const ServiceLoader = require('./ServiceLoader')
-const Controller = require('./Controller')
+    // Pipelines Is Defined Array From Parent `Middleware` Interface.
+    //   Pipeline Is Required 'pipe' Property
+    //   'pattern' property is optional.
+    //   More Information: https://expressjs.com/ko/api.html#app.use
+    this.pipelines.push({ pipe: this.pipeline })
 
-/** @interface */
-class Service {
-  /**
-   * ServiceLoader Class
-   *
-   * @static
-   * @type {ServiceLoader}
-   */
-  static loader = ServiceLoader
-
-  /**
-   * Controller Class
-   *
-   * @static
-   * @type {Controller}
-   */
-  static controller = Controller
-
-  /** Create Service */
-  constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
-    /**
-     * Controller Instance
-     *
-     * @type {Controller}
-     */
-    this.controller = null
+    // Middleware Can Have Many Pipeline.
+    this.pipelines.push({ pipe: this.secondPipeline })
+    this.pipelines.push({ pipe: this.ThirdPipeline })
   }
 }
 
-module.exports = Service
+module.exports = MyMiddleware
 </code></pre>
-        </article>
-    </section>
+<h3>Ordering Middlewares</h3>
+<p>You Can Ordering With <code>middlewares</code> Property. If You Define <code>middlewares</code> Property, RapidFire Is Load Only Defined Middlewares. This Way Also Need <code>paths.middlewares</code>.</p>
+<p>If Only <code>path.middlewares</code> Is Defined Without <code>middlewares</code> Property, RapidFire Is Using <code>fs.readdirSync(path.middlewares)</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>new RapidFire({
+  path: {
+    middlewares: 'path/your/middlewares',
+  },
+  middlewares: ['firstMiddleware', 'secondMiddleware', 'thirdMiddleware'],
+})
+</code></pre>
+</article>
 
-
-
+</section>
 
             </div>
             
