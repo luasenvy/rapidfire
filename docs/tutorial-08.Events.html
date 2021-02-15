@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>:: RapidFire :: Express Based WebServer Framework Middleware</title>
+  <title>:: RapidFire :: Express Based WebServer Framework 08.Events</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -121,386 +121,36 @@
 </div>
     <div id="main">
         <div
-            class="sidebar "
+            class="sidebar tutorials"
             id="sidebarNav"
         >
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Interfaces.html">Interfaces</a></li><li><a href="module-RapidFire.html">RapidFire</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-06.CustomInterface.html">06.CustomInterface</a></li><li><a href="tutorial-07.Lifecycle.html">07.Lifecycle</a></li><li><a href="tutorial-08.Events.html">08.Events</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
                 
             </nav>
         </div>
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Interface</p>
-                    <h1>Middleware</h1>
+                    <p>Tutorial</p>
+                    <h1>08.Events</h1>
                 </header>
-                
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>Middleware</h2>
-        
-    
-</header>
+                <section>
 
 <article>
-    <div class="container-overview">
-    
-        
-            <div class="description"><script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script></div>
-        
+    <h2>Listen Event</h2>
+<pre class="prettyprint source lang-javascript"><code>const rapidfire = new RapidFire()
 
-        
+rapidfire.on('open', () => console.info('HttpServer Start To Listen With 0000 Port.'))
+rapidfire.on('close', () => console.info('HttpServer Closed.'))
 
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="interfaces_Middleware.js.html" class="button">View Source</a>
-            <span>
-                <a href="interfaces_Middleware.js.html">interfaces/Middleware.js</a>, <a href="interfaces_Middleware.js.html#line8">line 8</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <div class='vertical-section'>
-            <h1>Members</h1>
-            <div class="members">
-            
-                <div class="member">
-
-    <span class="method-parameter is-pulled-right">
-        <label>Type:</label>
-        
-<span class="param-type"><a href="RapidFire.html">RapidFire</a></span>
-
-
-    </span>
-
-<h4 class="name" id="$rapidfire">
-    <a class="href-link" href="#$rapidfire">#</a>
-    
-    <span class="code-name">
-        $rapidfire
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script>Running RapidFire Instance
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="interfaces_Middleware.js.html" class="button">View Source</a>
-            <span>
-                <a href="interfaces_Middleware.js.html">interfaces/Middleware.js</a>, <a href="interfaces_Middleware.js.html#line16">line 16</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-    <span class="method-parameter is-pulled-right">
-        <label>Type:</label>
-        
-<span class="param-type">Array.&lt;<a href="global.html#Pipeline">Pipeline</a>></span>
-
-
-    </span>
-
-<h4 class="name" id="pipelines">
-    <a class="href-link" href="#pipelines">#</a>
-    
-    <span class="code-name">
-        pipelines
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script>Tasks Of Middleware.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="interfaces_Middleware.js.html" class="button">View Source</a>
-            <span>
-                <a href="interfaces_Middleware.js.html">interfaces/Middleware.js</a>, <a href="interfaces_Middleware.js.html#line22">line 22</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-            </div>
-        </div>
-    
-
-    
-        <div class='vertical-section'>
-            <h1>Methods</h1>
-            <div class="members">
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="init">
-        <a class="href-link" href="#init">#</a>
-        
-            
-                <span class='tag'>async</span>
-            
-        
-        <span class="code-name">
-            
-                init<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script>Initialize Function
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="interfaces_Middleware.js.html" class="button">View Source</a>
-            <span>
-                <a href="interfaces_Middleware.js.html">interfaces/Middleware.js</a>, <a href="interfaces_Middleware.js.html#line28">line 28</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-            </div>
-        </div>
-    
-
-    
-
-    
+rapidfire.ignition()
+</code></pre>
 </article>
 
 </section>
-
-
-
 
             </div>
             
