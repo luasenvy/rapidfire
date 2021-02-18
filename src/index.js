@@ -2,15 +2,13 @@ const { RapidFire } = require('./core')
 
 const Interfaces = require('./interfaces')
 
-module.exports = {
-  /** @module {RapidFire} RapidFire */
-  RapidFire,
-  /**
-   * @module {Interfaces} Interfaces
-   * @property {Controller} Controller {@link Controller}
-   * @property {Service} Service {@link Service}
-   * @property {ServiceLoader} ServiceLoader {@link ServiceLoader}
-   * @property {Middleware} Middleware {@link Middleware}
-   */
-  Interfaces,
-}
+/**
+ * @module {Object} Modules
+ * @property {RapidFire} RapidFire RapidFire Class
+ * @property {Object} Interfaces Interfaces
+ * @property {Controller} Interfaces.Controller Controller Interface
+ * @property {Service} Interfaces.Service Service Interface
+ * @property {ServiceLoader} Interfaces.ServiceLoader ServiceLoader Interface
+ * @property {Middleware} Interfaces.Middleware Middleware Interface
+ */
+module.exports = { RapidFire, Interfaces }
