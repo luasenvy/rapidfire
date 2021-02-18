@@ -160,6 +160,8 @@ const bodyParser = require('body-parser')
 const EventEmitter = require('events')
 const { ServiceLoader, Controller } = require('../interfaces')
 
+/** @typedef {Object} ExpressRouter {@link https://expressjs.com/ko/api.html#router ExpressRouter} Instance */
+
 /**
  * @typedef   {Object}    RapidFireOptions
  * @property  {Array}     isDev                RapidFire Development Mode
@@ -379,7 +381,7 @@ class RapidFire extends EventEmitter {
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
         const service = await serviceLoader.load({ express, Service })
 
-        this.app.use(service.router)
+        if (service.router) this.app.use(service.router)
 
         services.push(service)
       }

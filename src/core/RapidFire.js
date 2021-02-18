@@ -231,7 +231,7 @@ class RapidFire extends EventEmitter {
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
         const service = await serviceLoader.load({ express, Service })
 
-        this.app.use(service.router)
+        if (service.router) this.app.use(service.router)
 
         services.push(service)
       }
