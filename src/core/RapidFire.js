@@ -200,17 +200,18 @@ class RapidFire extends EventEmitter {
     }
 
     // ------------------------ Built-in Request Pre Middlewares
+    const qsNormalizeKeywords = this.options.querystringParser.normalize
     this.app.use((req, res, next) => {
       if (req.originalUrl.includes('?')) {
         const { search } = new URL(req.url, `${req.protocol}://${req.hostname}`)
 
         req.query = qs.parse(search.substr(1), {
           arrayLimit: 10000,
-          decoder: (str, decoder, charset, type) => {
+          decoder(str, decoder, charset, type) {
             const value = decoder(str, decoder, charset, type)
 
             if (/^(\d+|\d*\.\d+)$/.test(value)) return parseFloat(value)
-            if (value in this.options.querystringParser.normalize) return this.options.querystringParser.normalize[value]
+            if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
             return value
           },
         })
