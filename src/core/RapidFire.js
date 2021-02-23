@@ -206,7 +206,7 @@ class RapidFire extends EventEmitter {
 
         req.query = qs.parse(search.substr(1), {
           arrayLimit: 10000,
-          decoder(str, decoder, charset, type) {
+          decoder: (str, decoder, charset, type) => {
             const value = decoder(str, decoder, charset, type)
 
             if (/^(\d+|\d*\.\d+)$/.test(value)) return parseFloat(value)
