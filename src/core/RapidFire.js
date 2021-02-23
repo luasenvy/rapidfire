@@ -210,7 +210,7 @@ class RapidFire extends EventEmitter {
             const value = decoder(str, decoder, charset, type)
 
             if (/^(\d+|\d*\.\d+)$/.test(value)) return parseFloat(value)
-            if (value in this.options.querystringParser.normalize.keywords) return this.options.querystringParser.normalize.keywords[value]
+            if (value in this.options.querystringParser.normalize) return this.options.querystringParser.normalize[value]
             return value
           },
         })
