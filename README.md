@@ -54,14 +54,13 @@ rapidFire.ignition()
 - [x] [Middleware Ordering](https://github.com/luasenvy/rapidfire-example-order-middlewares)
 - [x] [Elasticsearch](https://github.com/luasenvy/rapidfire-example-elasticsearch)
 - [x] [Mongodb](https://github.com/luasenvy/rapidfire-example-mongodb)
+- [x] [GraphQL](https://github.com/luasenvy/rapidfire-example-express-graphql)
+  - `express-graphql` with `elasticsearch`
 - [x] [Nuxt](https://github.com/luasenvy/rapidfire-example-nuxt)
 - [x] [Vite](https://github.com/luasenvy/rapidfire-example-vite)
   - Vite `MiddlewareMode` Need `entry-server.js` For SSR. But, Not Implemented In This Example.
   - [Vite#setting-up-the-dev-server](https://vitejs.dev/guide/ssr.html#setting-up-the-dev-server)
   - [Vite#example-projects](https://vitejs.dev/guide/ssr.html#example-projects)
-- [ ] ~~Svelte~~
-- [ ] ~~Typescript~~
-- [ ] ~~Sapper~~
 
 # License
 
