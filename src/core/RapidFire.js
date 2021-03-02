@@ -159,7 +159,7 @@ class RapidFire extends EventEmitter {
     this.loaders = [defaultServiceLoader]
 
     /**
-     * Server Ready Status. This Property Is It Changes To 'true' Before Emit 'open'.
+     * Server Ready Status. This Property Is It Changes To 'true' After Emit 'open'.
      *
      * @member
      * @type {Boolean}
@@ -291,6 +291,7 @@ class RapidFire extends EventEmitter {
        * @event RapidFire#open
        */
       this.emit('open')
+      this.isReady = true
     })
 
     this.server.on('close', () => {
