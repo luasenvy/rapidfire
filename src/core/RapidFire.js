@@ -157,6 +157,14 @@ class RapidFire extends EventEmitter {
      * @type {Array}
      */
     this.loaders = [defaultServiceLoader]
+
+    /**
+     * Server Ready Status. This Property Is It Changes To 'true' Before Emit 'open'.
+     *
+     * @member
+     * @type {Boolean}
+     */
+    this.ready = false
   }
 
   /**
