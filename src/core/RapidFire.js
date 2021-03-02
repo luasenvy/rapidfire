@@ -164,7 +164,7 @@ class RapidFire extends EventEmitter {
      * @member
      * @type {Boolean}
      */
-    this.ready = false
+    this.isReady = false
   }
 
   /**
