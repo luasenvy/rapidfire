@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>:: RapidFire :: Express Based WebServer Framework 99.Examples</title>
+  <title>:: RapidFire :: Express Based WebServer Framework 09.ReuseServiceFunction</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -139,32 +139,59 @@
             <div class="content">
                 <header class="page-title">
                     <p>Tutorial</p>
-                    <h1>99.Examples</h1>
+                    <h1>09.ReuseServiceFunction</h1>
                 </header>
                 <section>
 
 <article>
-    <h2>Examples</h2>
-<ul>
-<li><a href="https://github.com/luasenvy/rapidfire-example-serve-html">Serve Plain HTML</a></li>
-<li><a href="https://github.com/luasenvy/rapidfire-example-express-session">Express Middleware Plugin</a></li>
-<li><a href="https://github.com/luasenvy/rapidfire-example-order-middlewares">Middleware Ordering</a></li>
-<li><a href="https://github.com/luasenvy/rapidfire-example-elasticsearch">Elasticsearch</a></li>
-<li><a href="https://github.com/luasenvy/rapidfire-example-mongodb">Mongodb</a></li>
-<li><a href="https://github.com/luasenvy/rapidfire-example-express-graphql">GraphQL</a>
-<ul>
-<li><code>express-graphql</code> with <code>elasticsearch</code></li>
-</ul>
-</li>
-<li><a href="https://github.com/luasenvy/rapidfire-example-nuxt">Nuxt</a></li>
-<li><a href="https://github.com/luasenvy/rapidfire-example-vite">Vite</a>
-<ul>
-<li>Vite <code>MiddlewareMode</code> Need <code>entry-server.js</code> For SSR. But, Not Implemented In This Example.</li>
-<li><a href="https://vitejs.dev/guide/ssr.html#setting-up-the-dev-server">Vite#setting-up-the-dev-server</a></li>
-<li><a href="https://vitejs.dev/guide/ssr.html#example-projects">Vite#example-projects</a></li>
-</ul>
-</li>
-</ul>
+    <h2>ReuseServiceFunction</h2>
+<p>There Are Times When You Want To Reuse A Service Rather Than Extends It. You Just Implement The Function To Return Data.</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Service },
+} = require('@luasenvy/rapidfire')
+
+class MyService extends Service {
+  constructor() {
+    super()
+  }
+
+  serviceA(req, res) {
+    const { hello } = this.methodA()
+    res.send({ hello })
+  }
+
+  methodA({ params = {} }) {
+    return { ...params, hello: 'world' }
+  }
+}
+
+module.exports = MyService
+</code></pre>
+<p>Override The Init Function To Find The Instance. Now, You Can Call A Function.:</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Service },
+} = require('@luasenvy/rapidfire')
+
+const MyService = require('./MyService')
+
+class OtherService extends Service {
+  constructor() {
+    super()
+    // ...
+  }
+
+  async init() {
+    this.myService = this.$rapidfire.services.find(service => service instanceof MyService)
+  }
+
+  methodB(req, res) {
+    const { ecma, hello } = this.myService.methodA({ ecma: 'script' })
+    res.send({ ecma, hello })
+  }
+}
+
+module.exports = OtherService
+</code></pre>
 </article>
 
 </section>
