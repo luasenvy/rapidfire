@@ -296,6 +296,13 @@ class RapidFire extends EventEmitter {
     })
 
     this.server.on('close', () => {
+      this.dbs = []
+      this.app = express()
+      this.controllers = this.controllers.filter(controller => controller instanceof Controller)
+      this.services = []
+      this.middlewares = []
+      this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
+
       this.server = null
       consola.info('Server Closed.')
       /**
@@ -304,9 +311,13 @@ class RapidFire extends EventEmitter {
        * @event RapidFire#close
        */
       this.emit('close')
+      this.isReady = false
     })
   }
 
+  /**
+   * Destroy RapidFire Framework
+   */
   extinguish() {
     for (const client of this.dbs) {
       if (client && client.close instanceof Function) {
