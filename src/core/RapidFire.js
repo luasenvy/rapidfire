@@ -296,13 +296,6 @@ class RapidFire extends EventEmitter {
     })
 
     this.server.on('close', () => {
-      this.dbs = []
-      this.app = express()
-      this.controllers = this.controllers.filter(controller => controller instanceof Controller)
-      this.services = []
-      this.middlewares = []
-      this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
-
       this.server = null
       consola.info('Server Closed.')
       /**
@@ -316,7 +309,7 @@ class RapidFire extends EventEmitter {
   }
 
   /**
-   * Destroy RapidFire Framework
+   * Reset RapidFire Framework And Stop Listen A Port.
    */
   extinguish() {
     for (const client of this.dbs) {
@@ -329,7 +322,14 @@ class RapidFire extends EventEmitter {
       }
     }
 
+    this.dbs = []
+    this.controllers = this.controllers.filter(controller => controller instanceof Controller)
+    this.services = []
+    this.middlewares = []
+    this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
+
     if (this.server) this.server.close()
+    this.app = express()
   }
 }
 
