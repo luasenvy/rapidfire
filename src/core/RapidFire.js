@@ -194,7 +194,7 @@ class RapidFire extends EventEmitter {
     // ------------------------ Load Loaders
     if (this.options.paths.loaders) {
       const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
-      const loaders = []
+
       for (const loaderFilename of loaderFilenames) {
         const Loader = require(path.join(this.options.paths.loaders, loaderFilename))
         const loader = new Loader()
@@ -202,9 +202,8 @@ class RapidFire extends EventEmitter {
         // Register Middleware Default Variables
         loader.$rapidfire = this
 
-        loaders.push(loader)
+        this.loaders.push(loader)
       }
-      this.loaders = loaders
     }
 
     // ------------------------ Built-in Request Pre Middlewares
@@ -233,7 +232,8 @@ class RapidFire extends EventEmitter {
     // ------------------------ Install Controller / Bind Service
     if (this.options.paths.services) {
       const serviceFilenames = fs.readdirSync(this.options.paths.services)
-      const services = []
+
+      // Load Services
       for (const serviceFilename of serviceFilenames) {
         const Service = require(path.join(this.options.paths.services, serviceFilename))
 
@@ -242,15 +242,18 @@ class RapidFire extends EventEmitter {
 
         if (service.router) this.app.use(service.router)
 
-        services.push(service)
+        this.services.push(service)
       }
-      this.services = services
+
+      // Init Services
+      for (const service of this.services) await service.init()
     }
 
     // ------------------------ Install Post Middlewares
     if (this.options.paths.middlewares) {
       const middlewareFilenames = this.options.middlewares.length <= 0 ? fs.readdirSync(this.options.paths.middlewares) : this.options.middlewares
 
+      // Load Middlewares
       for (const middlewareFilename of middlewareFilenames) {
         const Middleware = require(path.join(this.options.paths.middlewares, middlewareFilename))
         const middleware = new Middleware()
@@ -259,6 +262,7 @@ class RapidFire extends EventEmitter {
         this.middlewares.push(middleware)
       }
 
+      // Init Middlewares And Connect Pipelines To Express
       for (const middleware of this.middlewares) {
         await middleware.init()
 

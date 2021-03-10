@@ -34,6 +34,8 @@ class Service {
      */
     this.controller = null
   }
+
+  async init() {}
 }
 
 module.exports = Service
