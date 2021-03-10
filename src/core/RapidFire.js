@@ -250,21 +250,18 @@ class RapidFire extends EventEmitter {
     // ------------------------ Install Post Middlewares
     if (this.options.paths.middlewares) {
       const middlewareFilenames = this.options.middlewares.length <= 0 ? fs.readdirSync(this.options.paths.middlewares) : this.options.middlewares
-      const middlewares = []
+
       for (const middlewareFilename of middlewareFilenames) {
         const Middleware = require(path.join(this.options.paths.middlewares, middlewareFilename))
         const middleware = new Middleware()
 
         middleware.$rapidfire = this
-
-        await middleware.init()
-
-        middlewares.push(middleware)
+        this.middlewares.push(middleware)
       }
 
-      this.middlewares = middlewares
-
       for (const middleware of this.middlewares) {
+        await middleware.init()
+
         for (const { pattern, pipe } of middleware.pipelines) {
           if (pipe instanceof Function) {
             if (pattern) this.app.use(pattern, pipe)
