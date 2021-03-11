@@ -267,7 +267,7 @@ class RapidFire extends EventEmitter {
         await middleware.init()
 
         for (const { pattern, pipe } of middleware.pipelines) {
-          if (pipe instanceof Function) {
+          if (pipe instanceof Function || Array.isArray(pipe)) {
             if (pattern) this.app.use(pattern, pipe)
             else this.app.use(pipe)
           }
