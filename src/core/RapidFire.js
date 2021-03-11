@@ -25,6 +25,11 @@ const { ServiceLoader, Controller } = require('../interfaces')
  */
 
 /**
+ * @typedef   {Object}    RapidFireExtinguishOptions
+ * @property  {Boolean}   destory              When 'true' This Option, Clear DB Connections With 'close()'. And Reset `this.dbs`, `this.app` Variable.
+ */
+
+/**
  * @class
  * @extends EventEmitter
  * @mermaid
@@ -322,25 +327,30 @@ class RapidFire extends EventEmitter {
   }
 
   /**
-   * Destroy RapidFire Framework.
+   * Extinguish RapidFire Framework.
+   *
+   * @param {RapidFireExtinguishOptions} options Extinguish Options
    */
-  extinguish() {
-    for (const client of this.dbs) {
-      if (client && client.close instanceof Function) {
-        try {
-          client.close()
-        } catch (err) {
-          consola.error(err)
+  extinguish({ destroy = false } = {}) {
+    if (destroy) {
+      for (const client of this.dbs) {
+        if (client && client.close instanceof Function) {
+          try {
+            client.close()
+          } catch (err) {
+            consola.error(err)
+          }
         }
       }
+
+      this.dbs = []
+      this.app = {}
     }
 
-    this.dbs = []
     this.controllers = this.controllers.filter(controller => controller instanceof Controller)
     this.services = []
     this.middlewares = []
     this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
-    this.app = {}
 
     if (this.server) this.server.close()
     this.express = express()
