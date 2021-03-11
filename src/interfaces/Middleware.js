@@ -14,6 +14,7 @@ class Middleware {
      * @type {RapidFire}
      */
     this.$rapidfire = null
+
     /**
      * Tasks Of Middleware.
      *

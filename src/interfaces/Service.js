@@ -27,6 +27,7 @@ class Service {
      * @type {RapidFire}
      */
     this.$rapidfire = null
+
     /**
      * Controller Instance
      *

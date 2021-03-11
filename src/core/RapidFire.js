@@ -66,7 +66,7 @@ class RapidFire extends EventEmitter {
    *
    * @param  {RapidFireOptions}
    */
-  constructor({ dbs = [], ...options } = {}) {
+  constructor({ dbs = [], app, ...options } = {}) {
     super()
 
     let customOptions = {}
@@ -108,6 +108,7 @@ class RapidFire extends EventEmitter {
      * @type {HttpServer}
      */
     this.server = null
+
     /**
      * DB Clients
      *
@@ -115,13 +116,14 @@ class RapidFire extends EventEmitter {
      * @type {Array}
      */
     this.dbs = dbs
+
     /**
      * {@link https://expressjs.com/ko/api.html#app HttpServer}
      *
      * @member
      * @type {ExpressApplicationInstance}
      */
-    this.app = express()
+    this.express = express()
 
     const defaultController = new Controller()
     defaultController.$rapidfire = this
@@ -140,6 +142,7 @@ class RapidFire extends EventEmitter {
      * @type {Array}
      */
     this.services = []
+
     /**
      * RapidFire Framework Running Middleware Instances
      *
@@ -157,6 +160,14 @@ class RapidFire extends EventEmitter {
      * @type {Array}
      */
     this.loaders = [defaultServiceLoader]
+
+    /**
+     * Framework App Variables.
+     *
+     * @member
+     * @type {Object}
+     */
+    this.app = app || {}
 
     /**
      * Server Ready Status. This Property Is It Changes To 'true' After Emit 'open'.
@@ -208,7 +219,7 @@ class RapidFire extends EventEmitter {
 
     // ------------------------ Built-in Request Pre Middlewares
     const qsNormalizeKeywords = this.options.querystringParser.normalize
-    this.app.use((req, res, next) => {
+    this.express.use((req, res, next) => {
       if (req.originalUrl.includes('?')) {
         const { search } = new URL(req.url, `${req.protocol}://${req.hostname}`)
 
@@ -227,7 +238,7 @@ class RapidFire extends EventEmitter {
       next()
     })
 
-    this.app.use(bodyParser.json())
+    this.express.use(bodyParser.json())
 
     // ------------------------ Install Controller / Bind Service
     if (this.options.paths.services) {
@@ -240,7 +251,7 @@ class RapidFire extends EventEmitter {
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
         const service = await serviceLoader.load({ express, Service })
 
-        if (service.router) this.app.use(service.router)
+        if (service.router) this.express.use(service.router)
 
         this.services.push(service)
       }
@@ -268,15 +279,15 @@ class RapidFire extends EventEmitter {
 
         for (const { pattern, pipe } of middleware.pipelines) {
           if (pipe instanceof Function || Array.isArray(pipe)) {
-            if (pattern) this.app.use(pattern, pipe)
-            else this.app.use(pipe)
+            if (pattern) this.express.use(pattern, pipe)
+            else this.express.use(pipe)
           }
         }
       }
     }
 
     // eslint-disable-next-line no-unused-vars
-    this.app.use((err, req, res, next) => {
+    this.express.use((err, req, res, next) => {
       consola.error(err)
 
       if (res.headersSent) return next(err)
@@ -284,8 +295,9 @@ class RapidFire extends EventEmitter {
       res.status(err.code || 500).send(err.message)
     })
 
-    this.server = this.app.listen(this.options.port, this.options.host, () => {
+    this.server = this.express.listen(this.options.port, this.options.host, () => {
       consola.ready(`Server listening on http://${this.options.host}:${this.options.port}`)
+
       /**
        * HttpServer Is Ready To Listen
        *
@@ -298,6 +310,7 @@ class RapidFire extends EventEmitter {
     this.server.on('close', () => {
       this.server = null
       consola.info('Server Closed.')
+
       /**
        * HttpServer Is Stop To Listen
        *
@@ -309,7 +322,7 @@ class RapidFire extends EventEmitter {
   }
 
   /**
-   * Reset RapidFire Framework And Stop Listen A Port.
+   * Destroy RapidFire Framework.
    */
   extinguish() {
     for (const client of this.dbs) {
@@ -327,9 +340,11 @@ class RapidFire extends EventEmitter {
     this.services = []
     this.middlewares = []
     this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
+    this.app = {}
 
     if (this.server) this.server.close()
-    this.app = express()
+    this.express = express()
+    this.server = null
   }
 }
 

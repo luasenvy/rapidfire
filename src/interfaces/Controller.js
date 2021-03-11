@@ -12,6 +12,7 @@ class Controller {
      * @type {RapidFire}
      */
     this.$rapidfire = null
+
     /**
      * {@link https://github.com/expressjs/multer Multer} Instance
      *
