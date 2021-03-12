@@ -63,6 +63,7 @@ class RapidFire extends EventEmitter {
           undefined,
         },
       },
+      app: {},
     },
   }
 
@@ -71,7 +72,7 @@ class RapidFire extends EventEmitter {
    *
    * @param  {RapidFireOptions}
    */
-  constructor({ dbs = [], app, ...options } = {}) {
+  constructor({ dbs = [], app = {}, ...options } = {}) {
     super()
 
     let customOptions = {}
@@ -172,7 +173,7 @@ class RapidFire extends EventEmitter {
      * @member
      * @type {Object}
      */
-    this.app = app || {}
+    this.app = app
 
     /**
      * Server Ready Status. This Property Is It Changes To 'true' After Emit 'open'.
