@@ -197,7 +197,7 @@ class RapidFire extends EventEmitter {
       const controllerFilenames = fs.readdirSync(this.options.paths.controllers)
 
       const controllerPathnames = controllerFilenames
-        .flatMap(controllerFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: controllerFilename }))
+        .flatMap(controllerFilename => this.getModulesRecursively({ parent: this.options.paths.controllers, filename: controllerFilename }))
         .filter(Boolean)
 
       for (const controllerPathname of controllerPathnames) {
@@ -219,7 +219,7 @@ class RapidFire extends EventEmitter {
       const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
 
       const loaderPathnames = loaderFilenames
-        .flatMap(loaderFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: loaderFilename }))
+        .flatMap(loaderFilename => this.getModulesRecursively({ parent: this.options.paths.loaders, filename: loaderFilename }))
         .filter(Boolean)
 
       for (const loaderPathname of loaderPathnames) {
@@ -288,7 +288,7 @@ class RapidFire extends EventEmitter {
       const middlewareFilenames = this.options.middlewares.length <= 0 ? fs.readdirSync(this.options.paths.middlewares) : this.options.middlewares
 
       const middlewarePathnames = middlewareFilenames
-        .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: middlewareFilename }))
+        .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.middlewares, filename: middlewareFilename }))
         .filter(Boolean)
 
       // Load Middlewares
