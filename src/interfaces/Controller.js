@@ -20,6 +20,8 @@ class Controller {
      */
     this.multer = Multer({ dest: path.join('/tmp', process.env.npm_package_name || '/rapid-fire-uploads/') })
   }
+
+  async init() {}
 }
 
 module.exports = Controller

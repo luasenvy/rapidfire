@@ -347,25 +347,35 @@ class RapidFire extends EventEmitter {
     // ------------------------ Load Contollers
     if (this.options.paths.controllers) {
       const controllerFilenames = fs.readdirSync(this.options.paths.controllers)
-      const controllers = []
-      for (const controllerFilename of controllerFilenames) {
-        const Controller = require(path.join(this.options.paths.controllers, controllerFilename))
+
+      const controllerPathnames = controllerFilenames
+        .flatMap(controllerFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: controllerFilename }))
+        .filter(Boolean)
+
+      for (const controllerPathname of controllerPathnames) {
+        const Controller = require(controllerPathname)
         const controller = new Controller()
 
         // Register Middleware Default Variables
         controller.$rapidfire = this
 
-        controllers.push(controller)
+        this.controllers.push(controller)
       }
-      this.controllers = controllers
+
+      // Init Controllers
+      for (const controller of this.controllers) await controller.init()
     }
 
     // ------------------------ Load Loaders
     if (this.options.paths.loaders) {
       const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
 
-      for (const loaderFilename of loaderFilenames) {
-        const Loader = require(path.join(this.options.paths.loaders, loaderFilename))
+      const loaderPathnames = loaderFilenames
+        .flatMap(loaderFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: loaderFilename }))
+        .filter(Boolean)
+
+      for (const loaderPathname of loaderPathnames) {
+        const Loader = require(loaderPathname)
         const loader = new Loader()
 
         // Register Middleware Default Variables
@@ -373,6 +383,9 @@ class RapidFire extends EventEmitter {
 
         this.loaders.push(loader)
       }
+
+      // Init Loaders
+      for (const loader of this.loaders) await loader.init()
     }
 
     // ------------------------ Built-in Request Pre Middlewares
@@ -402,9 +415,13 @@ class RapidFire extends EventEmitter {
     if (this.options.paths.services) {
       const serviceFilenames = fs.readdirSync(this.options.paths.services)
 
+      const servicePathnames = serviceFilenames
+        .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))
+        .filter(Boolean)
+
       // Load Services
-      for (const serviceFilename of serviceFilenames) {
-        const Service = require(path.join(this.options.paths.services, serviceFilename))
+      for (const servicePathname of servicePathnames) {
+        const Service = require(servicePathname)
 
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
         const service = await serviceLoader.load({ express, Service })
@@ -422,9 +439,13 @@ class RapidFire extends EventEmitter {
     if (this.options.paths.middlewares) {
       const middlewareFilenames = this.options.middlewares.length &lt;= 0 ? fs.readdirSync(this.options.paths.middlewares) : this.options.middlewares
 
+      const middlewarePathnames = middlewareFilenames
+        .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: middlewareFilename }))
+        .filter(Boolean)
+
       // Load Middlewares
-      for (const middlewareFilename of middlewareFilenames) {
-        const Middleware = require(path.join(this.options.paths.middlewares, middlewareFilename))
+      for (const middlewarePathname of middlewarePathnames) {
+        const Middleware = require(middlewarePathname)
         const middleware = new Middleware()
 
         middleware.$rapidfire = this
@@ -508,6 +529,28 @@ class RapidFire extends EventEmitter {
     if (this.server) this.server.close()
     this.express = express()
     this.server = null
+  }
+
+  /**
+   * 하위 디렉토리 포함 .js 로 끝나는 모든 파일 경로
+   *
+   * @private
+   *
+   * @param  {Object} options
+   * @param  {String} options.parent     부모 경로
+   * @param  {String} options.filename   파일명
+   *
+   * @return {Array} 모든 파일 경로
+   */
+  getModulesRecursively({ parent, filename }) {
+    const filepath = path.join(parent, filename)
+
+    if (fs.statSync(filepath).isFile()) {
+      if (filename.endsWith('.js')) return filepath
+      return
+    }
+
+    return fs.readdirSync(filepath).flatMap(filename => this.getModulesRecursively({ parent: filepath, filename }))
   }
 }
 

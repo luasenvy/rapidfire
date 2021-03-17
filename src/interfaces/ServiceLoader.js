@@ -10,6 +10,8 @@ class ServiceLoader {
     this.$rapidfire = null
   }
 
+  async init() {}
+
   /**
    * Service Factory
    *
