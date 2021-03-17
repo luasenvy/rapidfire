@@ -132,7 +132,7 @@ class RapidFire extends EventEmitter {
     this.express = express()
 
     const defaultController = new Controller()
-    defaultController.$rapidfire = this
+    defaultController._$rapidfire = this
     /**
      * RapidFire Framework Running Controller Instances
      *
@@ -158,7 +158,7 @@ class RapidFire extends EventEmitter {
     this.middlewares = []
 
     const defaultServiceLoader = new ServiceLoader()
-    defaultServiceLoader.$rapidfire = this
+    defaultServiceLoader._$rapidfire = this
     /**
      * RapidFire Framework Running ServiceLoader Instances
      *
@@ -190,7 +190,7 @@ class RapidFire extends EventEmitter {
   async ignition() {
     const { isDev } = this.options
 
-    if (isDev) global.$rapidfire = this
+    if (isDev) global._$rapidfire = this
 
     // ------------------------ Load Contollers
     if (this.options.paths.controllers) {
@@ -205,7 +205,7 @@ class RapidFire extends EventEmitter {
         const controller = new Controller()
 
         // Register Middleware Default Variables
-        controller.$rapidfire = this
+        controller._$rapidfire = this
 
         this.controllers.push(controller)
       }
@@ -227,7 +227,7 @@ class RapidFire extends EventEmitter {
         const loader = new Loader()
 
         // Register Middleware Default Variables
-        loader.$rapidfire = this
+        loader._$rapidfire = this
 
         this.loaders.push(loader)
       }
@@ -296,7 +296,7 @@ class RapidFire extends EventEmitter {
         const Middleware = require(middlewarePathname)
         const middleware = new Middleware()
 
-        middleware.$rapidfire = this
+        middleware._$rapidfire = this
         this.middlewares.push(middleware)
       }
 

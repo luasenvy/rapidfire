@@ -8,12 +8,7 @@
 class Middleware {
   /** Create Middleware */
   constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
+    this._$rapidfire = null
 
     /**
      * Tasks Of Middleware.
@@ -21,6 +16,17 @@ class Middleware {
      * @type {Pipeline[]}
      */
     this.pipelines = []
+  }
+
+  /**
+   * Running RapidFire Instance
+   *
+   * @instance
+   * @readonly
+   * @type {RapidFire}
+   */
+  get $rapidfire() {
+    return this._$rapidfire
   }
 
   /**
