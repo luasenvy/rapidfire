@@ -13,7 +13,6 @@ class ServiceLoader {
    * @type {RapidFire}
    */
   get $rapidfire() {
-    console.info(this, this._$rapidfire, '<<<<<<<<<<<<<')
     return this._$rapidfire
   }
 
