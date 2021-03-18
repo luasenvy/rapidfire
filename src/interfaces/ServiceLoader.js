@@ -2,12 +2,18 @@
 class ServiceLoader {
   /** Create Service */
   constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
+    this._$rapidfire = null
+  }
+
+  /**
+   * Running RapidFire Instance
+   *
+   * @instance
+   * @readonly
+   * @type {RapidFire}
+   */
+  get $rapidfire() {
+    return this._$rapidfire
   }
 
   async init() {}

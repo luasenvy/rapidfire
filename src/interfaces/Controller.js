@@ -6,19 +6,30 @@ const Multer = require('multer')
 class Controller {
   /** Create Controller */
   constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
+    this._$rapidfire = null
+    this._multer = Multer({ dest: path.join('/tmp', process.env.npm_package_name || '/rapid-fire-uploads/') })
+  }
 
-    /**
-     * {@link https://github.com/expressjs/multer Multer} Instance
-     *
-     * @type {Multer}
-     */
-    this.multer = Multer({ dest: path.join('/tmp', process.env.npm_package_name || '/rapid-fire-uploads/') })
+  /**
+   * Running RapidFire Instance
+   *
+   * @instance
+   * @readonly
+   * @type {RapidFire}
+   */
+  get $rapidfire() {
+    return this._$rapidfire
+  }
+
+  /**
+   * {@link https://github.com/expressjs/multer Multer} Instance
+   *
+   * @instance
+   * @readonly
+   * @type {Multer}
+   */
+  get multer() {
+    return this._multer
   }
 
   async init() {}

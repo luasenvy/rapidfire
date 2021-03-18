@@ -173,19 +173,30 @@ class Service {
 
   /** Create Service */
   constructor() {
-    /**
-     * Running RapidFire Instance
-     *
-     * @type {RapidFire}
-     */
-    this.$rapidfire = null
+    this._$rapidfire = null
+    this._controller = null
+  }
 
-    /**
-     * Controller Instance
-     *
-     * @type {Controller}
-     */
-    this.controller = null
+  /**
+   * Running RapidFire Instance
+   *
+   * @instance
+   * @readonly
+   * @type {RapidFire}
+   */
+  get $rapidfire() {
+    return this._$rapidfire
+  }
+
+  /**
+   * Controller Instance
+   *
+   * @instance
+   * @readonly
+   * @type {Controller}
+   */
+  get controller() {
+    return this._controller
   }
 
   async init() {}
