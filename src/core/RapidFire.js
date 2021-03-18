@@ -159,6 +159,7 @@ class RapidFire extends EventEmitter {
 
     const defaultServiceLoader = new ServiceLoader()
     defaultServiceLoader._$rapidfire = this
+    defaultServiceLoader._controller = defaultController
     /**
      * RapidFire Framework Running ServiceLoader Instances
      *
