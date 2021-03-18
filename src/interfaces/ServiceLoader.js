@@ -20,12 +20,7 @@ class ServiceLoader {
    * @param {Service} options.Service Service Class
    */
   load({ express, Service }) {
-    const service = new Service({ router: express.Router() })
-
-    service.$rapidfire = this.$rapidfire
-    service.controller = this.$rapidfire.controllers.find(controller => controller instanceof Service.controller)
-
-    return service
+    return new Service({ router: express.Router() })
   }
 }
 
