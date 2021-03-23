@@ -22,6 +22,7 @@ const { ServiceLoader, Controller } = require('../interfaces')
  * @property  {String}    paths.middlewares    RapidFire User Define Middlewares Path
  * @property  {String}    paths.loaders        RapidFire User Define Loaders Path
  * @property  {Array}     middlewares          RapidFire Ordered Middleware Filenames In `options.paths.middlewares`
+ * @property  {Array}     services             RapidFire Ordered Service Filenames In `options.paths.services`
  */
 
 /**
@@ -55,6 +56,7 @@ class RapidFire extends EventEmitter {
         loaders: '',
       },
       middlewares: [],
+      services: [],
       querystringParser: {
         normalize: {
           true: true,
@@ -262,7 +264,7 @@ class RapidFire extends EventEmitter {
 
     // ------------------------ Install Controller / Bind Service
     if (this.options.paths.services) {
-      const serviceFilenames = fs.readdirSync(this.options.paths.services)
+      const serviceFilenames = this.options.services.length <= 0 ? fs.readdirSync(this.options.paths.services) : this.options.services
 
       const servicePathnames = serviceFilenames
         .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))

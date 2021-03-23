@@ -213,6 +213,17 @@ class MyService extends Service {
 
 module.exports = MyService
 </code></pre>
+<h3>Ordering Services</h3>
+<p>When You Require Other Services Within The Service. Empty Objects May Appear Because The Loading Order Is Not Correct.</p>
+<p>You Can Ordering With <code>services</code> Property. If You Define <code>services</code> Property, RapidFire Is Load Only Defined Services. This Way Also Need <code>paths.services</code>.</p>
+<p>If Only <code>path.services</code> Is Defined Without <code>services</code> Property, RapidFire Is Using <code>fs.readdirSync(path.services)</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>new RapidFire({
+  path: {
+    controllers: 'path/your/controllers',
+  },
+  controllers: ['RootService', 'RootExtendsService', ...Services],
+})
+</code></pre>
 </article>
 
 </section>

@@ -174,6 +174,7 @@ const { ServiceLoader, Controller } = require('../interfaces')
  * @property  {String}    paths.middlewares    RapidFire User Define Middlewares Path
  * @property  {String}    paths.loaders        RapidFire User Define Loaders Path
  * @property  {Array}     middlewares          RapidFire Ordered Middleware Filenames In `options.paths.middlewares`
+ * @property  {Array}     services             RapidFire Ordered Service Filenames In `options.paths.services`
  */
 
 /**
@@ -207,6 +208,7 @@ class RapidFire extends EventEmitter {
         loaders: '',
       },
       middlewares: [],
+      services: [],
       querystringParser: {
         normalize: {
           true: true,
@@ -311,6 +313,7 @@ class RapidFire extends EventEmitter {
 
     const defaultServiceLoader = new ServiceLoader()
     defaultServiceLoader._$rapidfire = this
+    defaultServiceLoader._controller = defaultController
     /**
      * RapidFire Framework Running ServiceLoader Instances
      *
@@ -413,7 +416,7 @@ class RapidFire extends EventEmitter {
 
     // ------------------------ Install Controller / Bind Service
     if (this.options.paths.services) {
-      const serviceFilenames = fs.readdirSync(this.options.paths.services)
+      const serviceFilenames = this.options.services.length &lt;= 0 ? fs.readdirSync(this.options.paths.services) : this.options.services
 
       const servicePathnames = serviceFilenames
         .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))
@@ -425,6 +428,9 @@ class RapidFire extends EventEmitter {
 
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
         const service = await serviceLoader.load({ express, Service })
+
+        service._$rapidfire = this
+        service._controller = this.controllers.find(controller => controller instanceof Service.controller)
 
         if (service.router) this.express.use(service.router)
 
