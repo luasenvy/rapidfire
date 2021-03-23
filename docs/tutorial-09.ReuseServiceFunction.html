@@ -172,8 +172,6 @@ module.exports = MyService
   Interfaces: { Service },
 } = require('@luasenvy/rapidfire')
 
-const MyService = require('./MyService')
-
 class OtherService extends Service {
   constructor() {
     super()
@@ -181,7 +179,7 @@ class OtherService extends Service {
   }
 
   async init() {
-    this.myService = this.$rapidfire.services.find(service => service instanceof MyService)
+    this.myService = this.$rapidfire.services.find(service => service.constructor.name === 'MyService')
   }
 
   methodB(req, res) {

@@ -264,7 +264,7 @@ class RapidFire extends EventEmitter {
 
     // ------------------------ Install Controller / Bind Service
     if (this.options.paths.services) {
-      const serviceFilenames = this.options.services.length <= 0 ? fs.readdirSync(this.options.paths.services) : this.options.services
+      const serviceFilenames = fs.readdirSync(this.options.paths.services)
 
       const servicePathnames = serviceFilenames
         .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))
