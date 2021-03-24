@@ -323,6 +323,13 @@ class RapidFire extends EventEmitter {
     this.express.use((err, req, res, next) => {
       consola.error(err)
 
+      /**
+       * Request Has Something Wrong.
+       *
+       * @event RapidFire#request:error
+       */
+      this.emit('request:error', err)
+
       if (res.headersSent) return next(err)
 
       res.status(err.code || 500).send(err.message)
