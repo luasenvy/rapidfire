@@ -5,7 +5,8 @@ const { URL } = require('url')
 const qs = require('qs')
 
 const express = require('express')
-const consola = require('consola')
+const debug = require('debug')('rapidfire')
+const error = require('debug')('rapidfire:error')
 
 const bodyParser = require('body-parser')
 
@@ -321,7 +322,7 @@ class RapidFire extends EventEmitter {
 
     // eslint-disable-next-line no-unused-vars
     this.express.use((err, req, res, next) => {
-      consola.error(err)
+      error(err)
 
       /**
        * Request Has Something Wrong.
@@ -336,7 +337,7 @@ class RapidFire extends EventEmitter {
     })
 
     this.server = this.express.listen(this.options.port, this.options.host, () => {
-      consola.ready(`Server listening on http://${this.options.host}:${this.options.port}`)
+      debug(`Server listening on http://${this.options.host}:${this.options.port}`)
 
       /**
        * HttpServer Is Ready To Listen
@@ -349,7 +350,7 @@ class RapidFire extends EventEmitter {
 
     this.server.on('close', () => {
       this.server = null
-      consola.info('Server Closed.')
+      debug('Server Closed.')
 
       /**
        * HttpServer Is Stop To Listen
@@ -373,7 +374,7 @@ class RapidFire extends EventEmitter {
           try {
             client.close()
           } catch (err) {
-            consola.error(err)
+            debug(err)
           }
         }
       }
