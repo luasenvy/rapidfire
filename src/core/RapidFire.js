@@ -315,8 +315,8 @@ class RapidFire extends EventEmitter {
           if (pipe instanceof Function || Array.isArray(pipe)) {
             const binder = this.express[method] || this.express.use
 
-            if (pattern) binder(pattern, pipe)
-            else binder(pipe)
+            if (pattern) binder.call(this.express, pattern, pipe)
+            else binder.call(this.express, pipe)
           }
         }
       }
