@@ -311,10 +311,12 @@ class RapidFire extends EventEmitter {
       for (const middleware of this.middlewares) {
         await middleware.init()
 
-        for (const { pattern, pipe } of middleware.pipelines) {
+        for (const { pattern, method, pipe } of middleware.pipelines) {
           if (pipe instanceof Function || Array.isArray(pipe)) {
-            if (pattern) this.express.use(pattern, pipe)
-            else this.express.use(pipe)
+            const binder = this.express[method] || this.express.use
+
+            if (pattern) binder(pattern, pipe)
+            else binder(pipe)
           }
         }
       }
