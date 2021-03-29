@@ -263,6 +263,38 @@ class RapidFire extends EventEmitter {
 
     this.express.use(bodyParser.json())
 
+    // ------------------------ Load Middlewares
+    if (this.options.paths.middlewares) {
+      const middlewareFilenames = this.options.middlewares.length <= 0 ? fs.readdirSync(this.options.paths.middlewares) : this.options.middlewares
+
+      const middlewarePathnames = middlewareFilenames
+        .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.middlewares, filename: middlewareFilename }))
+        .filter(Boolean)
+
+      // Load Middlewares
+      for (const middlewarePathname of middlewarePathnames) {
+        const Middleware = require(middlewarePathname)
+        const middleware = new Middleware()
+
+        middleware._$rapidfire = this
+        this.middlewares.push(middleware)
+      }
+    }
+
+    // ------------------------ Init Pre Middlewares And Connect Pipelines To Express
+    for (const middleware of this.middlewares.filter(({ position }) => position === 'pre')) {
+      await middleware.init()
+
+      for (const { pattern, method, pipe } of middleware.pipelines) {
+        if (pipe instanceof Function || Array.isArray(pipe)) {
+          const binder = this.express[method] || this.express.use
+
+          if (pattern) binder.call(this.express, pattern, pipe)
+          else binder.call(this.express, pipe)
+        }
+      }
+    }
+
     // ------------------------ Install Controller / Bind Service
     if (this.options.paths.services) {
       const serviceFilenames = fs.readdirSync(this.options.paths.services)
@@ -290,34 +322,16 @@ class RapidFire extends EventEmitter {
       for (const service of this.services) await service.init()
     }
 
-    // ------------------------ Install Post Middlewares
-    if (this.options.paths.middlewares) {
-      const middlewareFilenames = this.options.middlewares.length <= 0 ? fs.readdirSync(this.options.paths.middlewares) : this.options.middlewares
+    // ------------------------ Init Post Middlewares And Connect Pipelines To Express
+    for (const middleware of this.middlewares.filter(({ position }) => position === 'post')) {
+      await middleware.init()
 
-      const middlewarePathnames = middlewareFilenames
-        .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.middlewares, filename: middlewareFilename }))
-        .filter(Boolean)
+      for (const { pattern, method, pipe } of middleware.pipelines) {
+        if (pipe instanceof Function || Array.isArray(pipe)) {
+          const binder = this.express[method] || this.express.use
 
-      // Load Middlewares
-      for (const middlewarePathname of middlewarePathnames) {
-        const Middleware = require(middlewarePathname)
-        const middleware = new Middleware()
-
-        middleware._$rapidfire = this
-        this.middlewares.push(middleware)
-      }
-
-      // Init Middlewares And Connect Pipelines To Express
-      for (const middleware of this.middlewares) {
-        await middleware.init()
-
-        for (const { pattern, method, pipe } of middleware.pipelines) {
-          if (pipe instanceof Function || Array.isArray(pipe)) {
-            const binder = this.express[method] || this.express.use
-
-            if (pattern) binder.call(this.express, pattern, pipe)
-            else binder.call(this.express, pipe)
-          }
+          if (pattern) binder.call(this.express, pattern, pipe)
+          else binder.call(this.express, pipe)
         }
       }
     }

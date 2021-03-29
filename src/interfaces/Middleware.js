@@ -16,6 +16,14 @@ class Middleware {
      * @type {Pipeline[]}
      */
     this.pipelines = []
+
+    /**
+     * Position Of Middleware.
+     *
+     * @type {String}
+     * @defualt 'post'
+     */
+    this.position = 'post'
   }
 
   /**
