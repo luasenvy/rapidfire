@@ -275,11 +275,13 @@ class RapidFire extends EventEmitter {
       // Load Middlewares
       for (const middlewarePathname of middlewarePathnames) {
         const Middleware = require(middlewarePathname)
+        const enumTypes = Object.values(Middleware.ENUM.TYPES)
+
         const middleware = new Middleware()
 
-        if (!Middleware.ENUM.TYPES.includes(middleware.type)) {
+        if (!enumTypes.includes(middleware.type)) {
           warn(
-            `"${middleware.constructor}" Middleware Type Is Incorrect. Type Must Be One Of ${Object.values(Middleware.ENUM.TYPES).join(
+            `"${middleware.constructor}" Middleware Type Is Incorrect. Type Must Be One Of ${enumTypes.join(
               ','
             )}. This Middleware Will Setted Default Type "post".`
           )
