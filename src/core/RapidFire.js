@@ -282,7 +282,7 @@ class RapidFire extends EventEmitter {
         if (!middlewareEnumTypes.includes(implMiddleware.type)) {
           warn(
             `"${ImplMiddleware.name}" Middleware Type Is Incorrect. Type Must Be One Of ${middlewareEnumTypes.join(
-              ','
+              ', '
             )}. This Middleware Will Setted Default Type "${Middleware.ENUM.TYPES.POST}".`
           )
           implMiddleware.type = Middleware.ENUM.TYPES.POST
