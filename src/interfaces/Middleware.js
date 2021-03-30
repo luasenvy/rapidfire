@@ -6,6 +6,18 @@
 
 /** @interface */
 class Middleware {
+  static _ENUM = {
+    TYPES: {
+      PRE: 'pre',
+      POST: 'post',
+      ERROR: 'error',
+    },
+  }
+
+  static get ENUM() {
+    return this._ENUM
+  }
+
   /** Create Middleware */
   constructor() {
     this._$rapidfire = null
@@ -18,12 +30,12 @@ class Middleware {
     this.pipelines = []
 
     /**
-     * Position Of Middleware.
+     * Type Of Middleware.
      *
      * @type {String}
      * @defualt 'post'
      */
-    this.position = 'post'
+    this.type = 'post'
   }
 
   /**

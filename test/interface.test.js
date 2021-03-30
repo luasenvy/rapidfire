@@ -1,5 +1,5 @@
 const {
-  Interfaces: { Service, Controller, ServiceLoader },
+  Interfaces: { Service, Controller, ServiceLoader, Middleware },
 } = require('../src/index')
 
 class MyController extends Controller {
@@ -24,7 +24,23 @@ class MyService extends Service {
   }
 }
 
-test('"Service" Interface implementation Test', () => {
-  expect(MyService.loader).toEqual(MyServiceLoader)
-  expect(MyService.controller).toEqual(MyController)
+class MyMiddleware extends Middleware {
+  constructor() {
+    super()
+
+    this.type = 'helloworld'
+  }
+}
+
+describe('unit/interfaces', () => {
+  test('"Service" Interface implementation Test', async next => {
+    expect(MyService.loader).toEqual(MyServiceLoader)
+    expect(MyService.controller).toEqual(MyController)
+
+    next()
+  })
+
+  test('"Middleware" Interface implementation Test', async next => {
+    next()
+  })
 })

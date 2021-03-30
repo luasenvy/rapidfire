@@ -7,6 +7,7 @@ const qs = require('qs')
 const express = require('express')
 const debug = require('debug')('rapidfire')
 const error = require('debug')('rapidfire:error')
+const warn = require('debug')('rapidfire:warning')
 
 const bodyParser = require('body-parser')
 
@@ -276,13 +277,22 @@ class RapidFire extends EventEmitter {
         const Middleware = require(middlewarePathname)
         const middleware = new Middleware()
 
+        if (!Middleware.ENUM.TYPES.includes(middleware.type)) {
+          warn(
+            `"${middleware.constructor}" Middleware Type Is Incorrect. Type Must Be One Of ${Middleware.ENUM.TYPES.join(
+              ','
+            )}. This Middleware Will Setted Default Type "post".`
+          )
+          middleware.type = 'post'
+        }
+
         middleware._$rapidfire = this
         this.middlewares.push(middleware)
       }
     }
 
     // ------------------------ Init Pre Middlewares And Connect Pipelines To Express
-    for (const middleware of this.middlewares.filter(({ position }) => position === 'pre')) {
+    for (const middleware of this.middlewares.filter(({ type }) => type === 'pre')) {
       await middleware.init()
 
       for (const { pattern, method, pipe } of middleware.pipelines) {
@@ -323,7 +333,7 @@ class RapidFire extends EventEmitter {
     }
 
     // ------------------------ Init Post Middlewares And Connect Pipelines To Express
-    for (const middleware of this.middlewares.filter(({ position }) => position === 'post')) {
+    for (const middleware of this.middlewares.filter(({ type }) => type === 'post')) {
       await middleware.init()
 
       for (const { pattern, method, pipe } of middleware.pipelines) {
@@ -332,6 +342,17 @@ class RapidFire extends EventEmitter {
 
           if (pattern) binder.call(this.express, pattern, pipe)
           else binder.call(this.express, pipe)
+        }
+      }
+    }
+
+    // ------------------------ Init Error Handler Middlewares And Connect Pipelines To Express
+    for (const middleware of this.middlewares.filter(({ type }) => type === 'error')) {
+      await middleware.init()
+
+      for (const { pipe } of middleware.pipelines) {
+        if (pipe instanceof Function || Array.isArray(pipe)) {
+          this.express.use(pipe)
         }
       }
     }
