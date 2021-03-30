@@ -178,17 +178,33 @@ module.exports = MyMiddleware
 })
 </code></pre>
 <h3>Type Of Middleware</h3>
-<p>Middleware Can Have Type <code>pre</code>, <code>post</code>, <code>error</code>. Default Is <code>post</code>. It Is Divided Between Before And After Based On When The <code>Service</code> Is Loaded.</p>
-<p><code>pre</code>: Install Before <code>Service Route</code>.
-<code>post</code>: Install After <code>Service Route</code>.
-<code>error</code>: Install After <code>post</code> Middlewares Installed.</p>
+<p>Middleware Can Have Type One Of <code>pre</code>, <code>post</code>, <code>error</code>. Default Is <code>post</code>.
+It Is Divided Between Before And After Based On When The <code>Service</code> Load.</p>
+<p><code>pre</code>: Install Before <code>Service</code>.
+<code>post</code>: Install After <code>Service</code>.
+<code>error</code>: Install After <code>'post' Type Middlewares</code> Installed. See <a href="https://expressjs.com/en/guide/error-handling.html">Expressjs ErrorHandler</a></p>
+<p>For Example:</p>
+<ul>
+<li>Install <code>'pre' Type Middleware</code></li>
+<li>Install <code>'post' Type Middleware</code></li>
+<li>Install Service With <code>router.get('/hello')</code></li>
+<li>Install <code>'error' Type Middleware</code></li>
+</ul>
+<p>Request Flow Is:</p>
+<ol>
+<li><code>'pre' Type Middleware Pipelines</code></li>
+<li><code>router.get('/hello')</code></li>
+<li><code>'post' Type Middleware Pipelines</code></li>
+<li>Optionally, When Error Has Occurred. <code>'error' Type Middleware Pipelines</code>.</li>
+</ol>
 <pre class="prettyprint source lang-javascript"><code>const {
   Interfaces: { Middleware },
 } = require('@luasenvy/rapidfire')
 
 class MyMiddleware extends Middleware {
   constructor() {
-    this.type = MyMiddleware.ENUM.TYPES.POST
+    // Set Middleware Type
+    this.type = Middleware.ENUM.TYPES.PRE
   }
 }
 

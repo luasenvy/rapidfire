@@ -149,6 +149,7 @@
 
 rapidfire.on('open', () => console.info('HttpServer Start To Listen With 0000 Port.'))
 rapidfire.on('close', () => console.info('HttpServer Closed.'))
+rapidfire.on('request:error', err => console.error(err, 'Something Wrong In Progress Request. :('))
 
 rapidfire.ignition()
 </code></pre>
