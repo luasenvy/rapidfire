@@ -12,7 +12,9 @@ const warn = require('debug')('rapidfire:warning')
 const bodyParser = require('body-parser')
 
 const EventEmitter = require('events')
-const { ServiceLoader, Controller } = require('../interfaces')
+const { ServiceLoader, Controller, Middleware } = require('../interfaces')
+
+const middlewareEnumTypes = Object.values(Middleware.ENUM.TYPES)
 
 /**
  * @typedef   {Object}    RapidFireOptions
@@ -274,27 +276,25 @@ class RapidFire extends EventEmitter {
 
       // Load Middlewares
       for (const middlewarePathname of middlewarePathnames) {
-        const Middleware = require(middlewarePathname)
-        const enumTypes = Object.values(Middleware.ENUM.TYPES)
+        const ImplMiddleware = require(middlewarePathname)
+        const implMiddleware = new ImplMiddleware()
 
-        const middleware = new Middleware()
-
-        if (!enumTypes.includes(middleware.type)) {
+        if (!middlewareEnumTypes.includes(implMiddleware.type)) {
           warn(
-            `"${middleware.constructor}" Middleware Type Is Incorrect. Type Must Be One Of ${enumTypes.join(
+            `"${Middleware.name}" Middleware Type Is Incorrect. Type Must Be One Of ${middlewareEnumTypes.join(
               ','
-            )}. This Middleware Will Setted Default Type "post".`
+            )}. This Middleware Will Setted Default Type "${Middleware.ENUM.TYPES.POST}".`
           )
-          middleware.type = 'post'
+          implMiddleware.type = Middleware.ENUM.TYPES.POST
         }
 
-        middleware._$rapidfire = this
-        this.middlewares.push(middleware)
+        implMiddleware._$rapidfire = this
+        this.middlewares.push(implMiddleware)
       }
     }
 
     // ------------------------ Init Pre Middlewares And Connect Pipelines To Express
-    for (const middleware of this.middlewares.filter(({ type }) => type === 'pre')) {
+    for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.PRE)) {
       await middleware.init()
 
       for (const { pattern, method, pipe } of middleware.pipelines) {
@@ -335,7 +335,7 @@ class RapidFire extends EventEmitter {
     }
 
     // ------------------------ Init Post Middlewares And Connect Pipelines To Express
-    for (const middleware of this.middlewares.filter(({ type }) => type === 'post')) {
+    for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.POST)) {
       await middleware.init()
 
       for (const { pattern, method, pipe } of middleware.pipelines) {
@@ -349,7 +349,7 @@ class RapidFire extends EventEmitter {
     }
 
     // ------------------------ Init Error Handler Middlewares And Connect Pipelines To Express
-    for (const middleware of this.middlewares.filter(({ type }) => type === 'error')) {
+    for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.ERROR)) {
       await middleware.init()
 
       for (const { pipe } of middleware.pipelines) {
