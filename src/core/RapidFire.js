@@ -279,7 +279,7 @@ class RapidFire extends EventEmitter {
 
         if (!Middleware.ENUM.TYPES.includes(middleware.type)) {
           warn(
-            `"${middleware.constructor}" Middleware Type Is Incorrect. Type Must Be One Of ${Middleware.ENUM.TYPES.join(
+            `"${middleware.constructor}" Middleware Type Is Incorrect. Type Must Be One Of ${Object.values(Middleware.ENUM.TYPES).join(
               ','
             )}. This Middleware Will Setted Default Type "post".`
           )
