@@ -158,6 +158,18 @@
 
 /** @interface */
 class Middleware {
+  static _ENUM = {
+    TYPES: {
+      PRE: 'pre',
+      POST: 'post',
+      ERROR: 'error',
+    },
+  }
+
+  static get ENUM() {
+    return this._ENUM
+  }
+
   /** Create Middleware */
   constructor() {
     this._$rapidfire = null
@@ -168,6 +180,14 @@ class Middleware {
      * @type {Pipeline[]}
      */
     this.pipelines = []
+
+    /**
+     * Type Of Middleware.
+     *
+     * @type {String}
+     * @defualt 'post'
+     */
+    this.type = 'post'
   }
 
   /**

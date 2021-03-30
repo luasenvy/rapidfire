@@ -177,6 +177,23 @@ module.exports = MyMiddleware
   middlewares: ['firstMiddleware', 'secondMiddleware', 'thirdMiddleware'],
 })
 </code></pre>
+<h3>Type Of Middleware</h3>
+<p>Middleware Can Have Type <code>pre</code>, <code>post</code>, <code>error</code>. Default Is <code>post</code>. It Is Divided Between Before And After Based On When The <code>Service</code> Is Loaded.</p>
+<p><code>pre</code>: Install Before <code>Service Route</code>.
+<code>post</code>: Install After <code>Service Route</code>.
+<code>error</code>: Install After <code>post</code> Middlewares Installed.</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Middleware },
+} = require('@luasenvy/rapidfire')
+
+class MyMiddleware extends Middleware {
+  constructor() {
+    this.type = MyMiddleware.ENUM.TYPES.POST
+  }
+}
+
+module.exports = MyMiddleware
+</code></pre>
 </article>
 
 </section>

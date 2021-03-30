@@ -35,7 +35,7 @@ class Middleware {
      * @type {String}
      * @defualt 'post'
      */
-    this.type = 'post'
+    this.type = Middleware.ENUM.TYPES.POST
   }
 
   /**
