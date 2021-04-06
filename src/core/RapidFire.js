@@ -268,7 +268,10 @@ class RapidFire extends EventEmitter {
 
     // ------------------------ Load Middlewares
     if (this.options.paths.middlewares) {
-      const middlewareFilenames = this.options.middlewares.length <= 0 ? fs.readdirSync(this.options.paths.middlewares) : this.options.middlewares
+      const middlewareFilenames =
+        this.options.middlewares.length <= 0
+          ? fs.readdirSync(this.options.paths.middlewares)
+          : this.options.middlewares.map(middlewareFilename => (middlewareFilename.endsWith('.js') ? middlewareFilename : `${middlewareFilename}.js`))
 
       const middlewarePathnames = middlewareFilenames
         .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.middlewares, filename: middlewareFilename }))
