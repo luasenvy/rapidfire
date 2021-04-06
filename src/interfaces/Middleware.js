@@ -1,3 +1,5 @@
+const Controller = require('./Controller')
+
 /**
  * @typedef {Object} Pipeline
  * @property {(String|RegExp)} pattern {@link https://expressjs.com/ko/api.html#path-examples ExpressPath}
@@ -6,6 +8,14 @@
 
 /** @interface */
 class Middleware {
+  /**
+   * Controller Class
+   *
+   * @static
+   * @type {Controller}
+   */
+  static controller = Controller
+
   static _ENUM = {
     TYPES: {
       PRE: 'pre',
@@ -21,6 +31,7 @@ class Middleware {
   /** Create Middleware */
   constructor() {
     this._$rapidfire = null
+    this._controller = null
 
     /**
      * Tasks Of Middleware.
@@ -47,6 +58,17 @@ class Middleware {
    */
   get $rapidfire() {
     return this._$rapidfire
+  }
+
+  /**
+   * Controller Instance
+   *
+   * @instance
+   * @readonly
+   * @type {Controller}
+   */
+  get controller() {
+    return this._controller
   }
 
   /**
