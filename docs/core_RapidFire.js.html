@@ -441,6 +441,8 @@ class RapidFire extends EventEmitter {
         }
 
         implMiddleware._$rapidfire = this
+        implMiddleware._controller = this.controllers.find(controller => controller instanceof ImplMiddleware.controller)
+
         this.middlewares.push(implMiddleware)
       }
     }
