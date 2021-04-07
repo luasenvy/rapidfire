@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "body-parser": "^1.19.0",
+    "debug": "^4.3.1",
     "express": "^4.17.1",
     "multer": "^1.4.2"
   },
@@ -15,11 +16,10 @@
     "axios": "^0.21.1",
     "babel-eslint": "^10.1.0",
     "better-docs": "^2.3.2",
-    "debug": "^4.3.1",
-    "eslint": "^7.22.0",
+    "eslint": "^7.23.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
-    "husky": "^5.1.3",
+    "husky": "^6.0.0",
     "imagemin-lint-staged": "^0.4.0",
     "jest": "^26.6.3",
     "jsdoc": "^3.6.6",
