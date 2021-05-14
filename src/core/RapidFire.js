@@ -255,7 +255,7 @@ class RapidFire extends EventEmitter {
             const value = decoder(str, decoder, charset, type)
 
             // Zero Padded Numbers Is String
-            if (/^[^0][0-9]+$/) return parseFloat(value)
+            if (/^[^0][0-9]+$/.test(value)) return parseFloat(value)
             if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
             return value
           },
