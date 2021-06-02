@@ -254,12 +254,13 @@ class RapidFire extends EventEmitter {
           decoder(str, decoder, charset, type) {
             const value = decoder(str, decoder, charset, type)
 
-            // Number
-            //  - Not Zero Padded
-            if (/^[1-9]([0-9]+)?$/.test(value)) return parseFloat(value)
-
             // Keyword Values Like `undefined`
             if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
+
+            // Number
+            //  - Only Zero
+            //  - Not Zero Padded
+            if (/^(0|[1-9]([0-9]+)?)$/.test(value)) return parseFloat(value)
 
             // Default String
             return value
