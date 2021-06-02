@@ -259,7 +259,7 @@ class RapidFire extends EventEmitter {
             if (/^[1-9]([0-9]+)?$/.test(value)) return parseFloat(value)
 
             // Keyword Values Like `undefined`
-            if (qsNormalizeKeywords.includes(value)) return qsNormalizeKeywords[value]
+            if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
 
             // Default String
             return value
