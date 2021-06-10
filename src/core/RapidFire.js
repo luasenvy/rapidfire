@@ -69,7 +69,6 @@ class RapidFire extends EventEmitter {
           undefined,
         },
       },
-      app: {},
     },
   }
 
