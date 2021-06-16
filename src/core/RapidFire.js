@@ -61,6 +61,7 @@ class RapidFire extends EventEmitter {
       },
       middlewares: [],
       services: [],
+      bodyParser: { limit: '50mb' },
       querystringParser: {
         normalize: {
           true: true,
@@ -270,7 +271,7 @@ class RapidFire extends EventEmitter {
       next()
     })
 
-    this.express.use(bodyParser.json())
+    this.express.use(bodyParser.json(this.options.bodyParser))
 
     // ------------------------ Load Middlewares
     if (this.options.paths.middlewares) {
