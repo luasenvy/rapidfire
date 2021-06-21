@@ -25,8 +25,8 @@ class ServiceLoader {
    * @param {Express} options.express Express Module
    * @param {Service} options.Service Service Class
    */
-  load({ express, Service }) {
-    return new Service({ router: express.Router() })
+  load({ express, Service, controller }) {
+    return new Service({ router: express.Router(), controller })
   }
 }
 

@@ -331,11 +331,13 @@ class RapidFire extends EventEmitter {
       for (const servicePathname of servicePathnames) {
         const Service = require(servicePathname)
 
+        const controller = this.controllers.find(controller => controller instanceof Service.controller)
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
-        const service = await serviceLoader.load({ express, Service })
+
+        const service = await serviceLoader.load({ express, Service, controller })
 
         service._$rapidfire = this
-        service._controller = this.controllers.find(controller => controller instanceof Service.controller)
+        service._controller = controller
 
         if (service.router) this.express.use(service.router)
 
