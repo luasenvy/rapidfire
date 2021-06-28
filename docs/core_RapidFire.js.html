@@ -213,6 +213,7 @@ class RapidFire extends EventEmitter {
       },
       middlewares: [],
       services: [],
+      bodyParser: { limit: '50mb' },
       querystringParser: {
         normalize: {
           true: true,
@@ -221,7 +222,6 @@ class RapidFire extends EventEmitter {
           undefined,
         },
       },
-      app: {},
     },
   }
 
@@ -406,9 +406,15 @@ class RapidFire extends EventEmitter {
           decoder(str, decoder, charset, type) {
             const value = decoder(str, decoder, charset, type)
 
-            // Zero Padded Numbers Is String
-            if (/^[^0][0-9]+$/.test(value)) return parseFloat(value)
+            // Keyword Values Like `undefined`
             if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
+
+            // Number
+            //  - Only Zero
+            //  - Not Zero Padded
+            if (/^(0|[1-9]([0-9]+)?)$/.test(value)) return parseFloat(value)
+
+            // Default String
             return value
           },
         })
@@ -417,7 +423,7 @@ class RapidFire extends EventEmitter {
       next()
     })
 
-    this.express.use(bodyParser.json())
+    this.express.use(bodyParser.json(this.options.bodyParser))
 
     // ------------------------ Load Middlewares
     if (this.options.paths.middlewares) {
@@ -477,11 +483,13 @@ class RapidFire extends EventEmitter {
       for (const servicePathname of servicePathnames) {
         const Service = require(servicePathname)
 
+        const controller = this.controllers.find(controller => controller instanceof Service.controller)
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
-        const service = await serviceLoader.load({ express, Service })
+
+        const service = await serviceLoader.load({ express, Service, controller })
 
         service._$rapidfire = this
-        service._controller = this.controllers.find(controller => controller instanceof Service.controller)
+        service._controller = controller
 
         if (service.router) this.express.use(service.router)
 
