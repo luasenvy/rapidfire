@@ -33,6 +33,8 @@ class Service extends EventEmitter {
 
     this._$rapidfire = null
     this._controller = null
+
+    this.isReady = false
   }
 
   /**
@@ -60,6 +62,8 @@ class Service extends EventEmitter {
   async init() {}
 
   async load() {
+    this.isReady = true
+
     /**
      * RapidFire Service Is Loaded
      *

@@ -43,6 +43,8 @@ class Middleware extends EventEmitter {
     this._$rapidfire = null
     this._controller = null
 
+    this.isReady = false
+
     /**
      * Tasks Of Middleware.
      *
@@ -87,6 +89,8 @@ class Middleware extends EventEmitter {
   async init() {}
 
   async load() {
+    this.isReady = true
+
     /**
      * RapidFire Middleware Is Loaded
      *

@@ -13,6 +13,8 @@ class Controller extends EventEmitter {
     super()
 
     this._$rapidfire = null
+
+    this.isReady = false
   }
 
   /**
@@ -29,6 +31,8 @@ class Controller extends EventEmitter {
   async init() {}
 
   async load() {
+    this.isReady = true
+
     /**
      * RapidFire Middleware Is Loaded
      *

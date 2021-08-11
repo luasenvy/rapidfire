@@ -13,6 +13,7 @@ class ServiceLoader extends EventEmitter {
     super()
 
     this._$rapidfire = null
+    this.isReady = false
   }
 
   /**
@@ -29,6 +30,8 @@ class ServiceLoader extends EventEmitter {
   async init() {}
 
   async load() {
+    this.isReady = true
+
     /**
      * RapidFire ServiceLoader Is Loaded
      *
