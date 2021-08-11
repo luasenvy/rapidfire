@@ -162,7 +162,10 @@
 class ServiceLoader extends EventEmitter {
   /** Create Service */
   constructor() {
+    super()
+
     this._$rapidfire = null
+    this.isReady = false
   }
 
   /**
@@ -179,6 +182,8 @@ class ServiceLoader extends EventEmitter {
   async init() {}
 
   async load() {
+    this.isReady = true
+
     /**
      * RapidFire ServiceLoader Is Loaded
      *
