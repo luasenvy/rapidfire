@@ -38,6 +38,8 @@ class Middleware extends EventEmitter {
 
   /** Create Middleware */
   constructor() {
+    super()
+
     this._$rapidfire = null
     this._controller = null
 

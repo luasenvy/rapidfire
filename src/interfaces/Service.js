@@ -29,6 +29,8 @@ class Service extends EventEmitter {
 
   /** Create Service */
   constructor() {
+    super()
+
     this._$rapidfire = null
     this._controller = null
   }

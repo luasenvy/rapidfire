@@ -10,6 +10,8 @@ const EventEmitter = require('events')
 class ServiceLoader extends EventEmitter {
   /** Create Service */
   constructor() {
+    super()
+
     this._$rapidfire = null
   }
 

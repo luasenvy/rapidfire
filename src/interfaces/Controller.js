@@ -10,6 +10,8 @@ const EventEmitter = require('events')
 class Controller extends EventEmitter {
   /** Create Controller */
   constructor() {
+    super()
+
     this._$rapidfire = null
   }
 
