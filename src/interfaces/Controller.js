@@ -1,5 +1,13 @@
-/** @interface */
-class Controller {
+const EventEmitter = require('events')
+
+/**
+ * @interface
+ * @extends EventEmitter
+ * @mermaid
+ *   graph TD;
+ *     EventEmitter --> Controller;
+ */
+class Controller extends EventEmitter {
   /** Create Controller */
   constructor() {
     this._$rapidfire = null
@@ -17,6 +25,15 @@ class Controller {
   }
 
   async init() {}
+
+  async load() {
+    /**
+     * RapidFire Middleware Is Loaded
+     *
+     * @event RapidFire#controller:load
+     */
+    this.emit('controller:load', { controller: this })
+  }
 }
 
 module.exports = Controller

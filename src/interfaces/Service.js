@@ -1,8 +1,16 @@
 const ServiceLoader = require('./ServiceLoader')
 const Controller = require('./Controller')
 
-/** @interface */
-class Service {
+const EventEmitter = require('events')
+
+/**
+ * @interface
+ * @extends EventEmitter
+ * @mermaid
+ *   graph TD;
+ *     EventEmitter --> Service;
+ */
+class Service extends EventEmitter {
   /**
    * ServiceLoader Class
    *
@@ -48,6 +56,15 @@ class Service {
   }
 
   async init() {}
+
+  async load() {
+    /**
+     * RapidFire Service Is Loaded
+     *
+     * @event RapidFire#service:load
+     */
+    this.emit('service:load', { service: this })
+  }
 }
 
 module.exports = Service

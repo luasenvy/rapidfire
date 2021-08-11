@@ -218,7 +218,10 @@ class RapidFire extends EventEmitter {
       }
 
       // Init Controllers
-      for (const controller of this.controllers) await controller.init()
+      for (const controller of this.controllers) {
+        await controller.init()
+        await controller.load()
+      }
     }
 
     // ------------------------ Load Loaders
@@ -240,7 +243,10 @@ class RapidFire extends EventEmitter {
       }
 
       // Init Loaders
-      for (const loader of this.loaders) await loader.init()
+      for (const loader of this.loaders) {
+        await loader.init()
+        await loader.load()
+      }
     }
 
     // ------------------------ Built-in Request Pre Middlewares
@@ -334,7 +340,7 @@ class RapidFire extends EventEmitter {
         const controller = this.controllers.find(controller => controller instanceof Service.controller)
         const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
 
-        const service = await serviceLoader.load({ express, Service, controller })
+        const service = await serviceLoader.getInstance({ express, Service, controller })
 
         service._$rapidfire = this
         service._controller = controller
@@ -345,12 +351,16 @@ class RapidFire extends EventEmitter {
       }
 
       // Init Services
-      for (const service of this.services) await service.init()
+      for (const service of this.services) {
+        await service.init()
+        await service.load()
+      }
     }
 
     // ------------------------ Init Post Middlewares And Connect Pipelines To Express
     for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.POST)) {
       await middleware.init()
+      await middleware.load()
 
       for (const { pattern, method, pipe } of middleware.pipelines) {
         if (pipe instanceof Function || Array.isArray(pipe)) {
@@ -365,6 +375,7 @@ class RapidFire extends EventEmitter {
     // ------------------------ Init Error Handler Middlewares And Connect Pipelines To Express
     for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.ERROR)) {
       await middleware.init()
+      await middleware.load()
 
       for (const { pipe } of middleware.pipelines) {
         if (pipe instanceof Function || Array.isArray(pipe)) {

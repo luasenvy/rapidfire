@@ -133,7 +133,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Modules.html">Modules</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li><li><a href="RapidFire.html#event:request:error">request:error</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Modules.html">Modules</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:controller:load">controller:load</a></li><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li><li><a href="RapidFire.html#event:middleware:load">middleware:load</a></li><li><a href="RapidFire.html#event:request:error">request:error</a></li><li><a href="RapidFire.html#event:service:load">service:load</a></li><li><a href="RapidFire.html#event:serviceLoader:load">serviceLoader:load</a></li></ul><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -150,8 +150,16 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/** @interface */
-class ServiceLoader {
+            <pre class="prettyprint source linenums"><code>const EventEmitter = require('events')
+
+/**
+ * @interface
+ * @extends EventEmitter
+ * @mermaid
+ *   graph TD;
+ *     EventEmitter --> ServiceLoader;
+ */
+class ServiceLoader extends EventEmitter {
   /** Create Service */
   constructor() {
     this._$rapidfire = null
@@ -170,6 +178,15 @@ class ServiceLoader {
 
   async init() {}
 
+  async load() {
+    /**
+     * RapidFire ServiceLoader Is Loaded
+     *
+     * @event RapidFire#serviceLoader:load
+     */
+    this.emit('serviceLoader:load', { serviceLoader: this })
+  }
+
   /**
    * Service Factory
    *
@@ -177,7 +194,7 @@ class ServiceLoader {
    * @param {Express} options.express Express Module
    * @param {Service} options.Service Service Class
    */
-  load({ express, Service, controller }) {
+  getInstance({ express, Service, controller }) {
     return new Service({ router: express.Router(), controller })
   }
 }

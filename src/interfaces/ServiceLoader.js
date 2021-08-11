@@ -1,5 +1,13 @@
-/** @interface */
-class ServiceLoader {
+const EventEmitter = require('events')
+
+/**
+ * @interface
+ * @extends EventEmitter
+ * @mermaid
+ *   graph TD;
+ *     EventEmitter --> ServiceLoader;
+ */
+class ServiceLoader extends EventEmitter {
   /** Create Service */
   constructor() {
     this._$rapidfire = null
@@ -18,6 +26,15 @@ class ServiceLoader {
 
   async init() {}
 
+  async load() {
+    /**
+     * RapidFire ServiceLoader Is Loaded
+     *
+     * @event RapidFire#serviceLoader:load
+     */
+    this.emit('serviceLoader:load', { serviceLoader: this })
+  }
+
   /**
    * Service Factory
    *
@@ -25,7 +42,7 @@ class ServiceLoader {
    * @param {Express} options.express Express Module
    * @param {Service} options.Service Service Class
    */
-  load({ express, Service, controller }) {
+  getInstance({ express, Service, controller }) {
     return new Service({ router: express.Router(), controller })
   }
 }

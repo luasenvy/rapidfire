@@ -1,13 +1,21 @@
 const Controller = require('./Controller')
 
+const EventEmitter = require('events')
+
 /**
  * @typedef {Object} Pipeline
  * @property {(String|RegExp)} pattern {@link https://expressjs.com/ko/api.html#path-examples ExpressPath}
  * @property {Function} Pipe {@link https://expressjs.com/ko/api.html#middleware-callback-function-examples ExpressMiddlewareCallback}
  */
 
-/** @interface */
-class Middleware {
+/**
+ * @interface
+ * @extends EventEmitter
+ * @mermaid
+ *   graph TD;
+ *     EventEmitter --> Middleware;
+ */
+class Middleware extends EventEmitter {
   /**
    * Controller Class
    *
@@ -75,6 +83,15 @@ class Middleware {
    * Initialize Function
    */
   async init() {}
+
+  async load() {
+    /**
+     * RapidFire Middleware Is Loaded
+     *
+     * @event RapidFire#middleware:load
+     */
+    this.emit('middleware:load', { middleware: this })
+  }
 }
 
 module.exports = Middleware
