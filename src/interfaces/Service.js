@@ -71,6 +71,11 @@ class Service extends EventEmitter {
      */
     this.emit('service:load', { service: this })
   }
+
+  on(eventName, callback) {
+    if ('service:load' === eventName && this.isReady) return callback({ service: this })
+    return super.on(eventName, callback)
+  }
 }
 
 module.exports = Service
