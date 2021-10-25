@@ -1,6 +1,6 @@
 {
   "name": "@luasenvy/rapidfire",
-  "version": "0.1.68",
+  "version": "0.1.69",
   "description": "express based web server framework",
   "main": "src/index.js",
   "directories": {
