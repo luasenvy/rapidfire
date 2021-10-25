@@ -1,8 +1,8 @@
 module.exports = {
   root: true,
   env: { node: true, es2021: true },
-  parser: 'babel-eslint',
-  parserOptions: { ecmaVersion: 2021 },
+  parser: '@babel/eslint-parser',
+  parserOptions: { requireConfigFile: false, ecmaVersion: 2021 },
   extends: ['prettier', 'plugin:prettier/recommended'],
   plugins: ['prettier'],
   // add your custom rules here

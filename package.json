@@ -12,19 +12,19 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
-    "axios": "^0.21.1",
-    "babel-eslint": "^10.1.0",
+    "@babel/eslint-parser": "^7.15.8",
+    "axios": "^0.23.0",
     "better-docs": "^2.3.2",
-    "eslint": "^7.32.0",
+    "eslint": "^8.1.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "husky": "^7.0.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
     "imagemin-lint-staged": "^0.4.0",
-    "jest": "^27.0.6",
+    "jest": "^27.3.1",
     "jsdoc": "^3.6.7",
     "jsdoc-mermaid": "^1.0.0",
-    "lint-staged": "^11.1.2",
-    "prettier": "^2.3.2"
+    "lint-staged": "^11.2.4",
+    "prettier": "^2.4.1"
   },
   "scripts": {
     "docs": "rm -rf `ls -rtd docs/* | grep -v -e CNAME` && jsdoc -c jsdoc.config.js",
