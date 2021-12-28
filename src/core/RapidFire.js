@@ -261,15 +261,15 @@ class RapidFire extends EventEmitter {
             decoder(str, decoder, charset, type) {
               const value = decoder(str, decoder, charset, type)
 
-              // Keyword Values Like `undefined`
+              // Data Type Keywords
+              //  - true, false, null, undefined
               if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
 
-              // Number
-              //  - Only Zero
-              //  - Not Zero Padded
-              if (/^(0|[1-9]([0-9]+)?)$/.test(value)) return parseFloat(value)
+              // Number Type Value
+              //  - Must Be Pass 'isNaN()' And Not Zero Padded Digits
+              if (!isNaN(value) && !/^(-|\+)?0[0-9]+$/.test(value)) return parseFloat(value)
 
-              // Default String
+              // String Value
               return value
             },
           })
