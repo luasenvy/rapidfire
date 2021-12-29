@@ -64,6 +64,7 @@ class RapidFire extends EventEmitter {
       bodyParser: { limit: '50mb' },
       querystringParser: {
         normalize: {
+          '': '',
           true: true,
           false: false,
           null: null,
@@ -267,7 +268,7 @@ class RapidFire extends EventEmitter {
 
               // Number Type Value
               //  - Must Be Pass 'isNaN()' And Not Zero Padded Digits Or Empty.
-              if (!isNaN(value) && !/^((-|\+)?0[0-9]+)?$/.test(value)) return parseFloat(value)
+              if (!isNaN(value) && !/^(-|\+)?0[0-9]+$/.test(value)) return parseFloat(value)
 
               // String Value
               return value
