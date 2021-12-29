@@ -100,6 +100,10 @@
                                 09.ReuseServiceFunction
                             </a>
                         
+                            <a class="dropdown-item" href="tutorial-10.FindMyClassWithUglifiedCode.html">
+                                10.FindMyClassWithUglifiedCode
+                            </a>
+                        
                             <a class="dropdown-item" href="tutorial-99.Examples.html">
                                 99.Examples
                             </a>
@@ -131,7 +135,7 @@
             
             <nav>
                 
-                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-06.CustomInterface.html">06.CustomInterface</a></li><li><a href="tutorial-07.Lifecycle.html">07.Lifecycle</a></li><li><a href="tutorial-08.Events.html">08.Events</a></li><li><a href="tutorial-09.ReuseServiceFunction.html">09.ReuseServiceFunction</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-06.CustomInterface.html">06.CustomInterface</a></li><li><a href="tutorial-07.Lifecycle.html">07.Lifecycle</a></li><li><a href="tutorial-08.Events.html">08.Events</a></li><li><a href="tutorial-09.ReuseServiceFunction.html">09.ReuseServiceFunction</a></li><li><a href="tutorial-10.FindMyClassWithUglifiedCode.html">10.FindMyClassWithUglifiedCode</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
                 
             </nav>
         </div>
@@ -144,14 +148,36 @@
                 <section>
 
 <article>
-    <h2>Listen Event</h2>
+    <h2>Events</h2>
+<h3>Rapidfire Instance Listen Event</h3>
 <pre class="prettyprint source lang-javascript"><code>const rapidfire = new RapidFire()
 
 rapidfire.on('open', () => console.info('HttpServer Start To Listen With 0000 Port.'))
 rapidfire.on('close', () => console.info('HttpServer Closed.'))
 rapidfire.on('request:error', err => console.error(err, 'Something Wrong In Progress Request. :('))
 
-rapidfire.ignition()
+try {
+  rapidfire.ignition()
+} catch(err) {
+  // Occurred Error With Ignition.
+  console.error(err)
+  throw err
+}
+</code></pre>
+<h3>Rapidfire.Service Instance Listen Event</h3>
+<pre class="prettyprint source lang-javascript"><code>const serviceInstance = this.$rapidfire.services.find(service => 'MyService' === service.constructor.name)
+
+serviceInstance.on('service:load', () => console.info('MyService Is Loaded.'))
+</code></pre>
+<h3>Rapidfire.Middleware Instance Listen Event</h3>
+<pre class="prettyprint source lang-javascript"><code>const middlewareInstance = this.$rapidfire.middlewares.find(middleware => 'MyMiddleware' === middleware.constructor.name)
+
+middlewareInstance.on('service:load', () => console.info('MyMiddleware Is Loaded.'))
+</code></pre>
+<h3>Rapidfire.ServiceLoader Instance Listen Event</h3>
+<pre class="prettyprint source lang-javascript"><code>const serviceLoaderInstance = this.$rapidfire.serviceLoaders.find(serviceLoader => 'MyServiceLoader' === serviceLoader.constructor.name)
+
+serviceLoaderInstance.on('serviceLoader:load', () => console.info('MyServiceLoader Is Loaded.'))
 </code></pre>
 </article>
 

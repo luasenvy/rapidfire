@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>:: RapidFire :: Express Based WebServer Framework 07.Lifecycle</title>
+  <title>:: RapidFire :: Express Based WebServer Framework 10.FindMyClassWithUglifiedCode</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -143,20 +143,41 @@
             <div class="content">
                 <header class="page-title">
                     <p>Tutorial</p>
-                    <h1>07.Lifecycle</h1>
+                    <h1>10.FindMyClassWithUglifiedCode</h1>
                 </header>
                 <section>
 
 <article>
-    <h2>Bootup</h2>
-<ol>
-<li><code>express</code> initialize</li>
-<li>Load <code>Controller</code> From <code>paths.controllers</code> Path.</li>
-<li>Load <code>ServiceLoader</code> From <code>paths.loaders</code> Path.</li>
-<li>Initialize <code>Service</code> From <code>paths.services</code> Path.</li>
-<li>Initialize <code>Middleware</code> From <code>paths.middlewares</code> Path And Bind To <code>Express</code></li>
-<li>Start To Listen <code>HttpServer</code></li>
-</ol>
+    <h2>FindMyClassWithUglifiedCode</h2>
+<p>If You Use Uglify, <code>constructor.name</code> Will Be Change. And You Can't Find Service With <code>constructor.name</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const myService = this.$rapidfire.services.find(service => 'MyService' === service.constructor.name)
+// myService Is `undefined`.
+// Next Line Will Be Occurred Error.
+myService.myMethod()
+</code></pre>
+<p>You Can Avoid This Error With <code>static</code> Variables. Because Uglify Cannot Change String Variable.</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Service },
+} = require('@luasenvy/rapidfire')
+
+class MyService extends Service {
+  static id = 'MyService'
+
+  constructor({ router }) {
+    super()
+  }
+
+  myMethod() {
+    console.info('Hello, World! :)')
+  }
+}
+
+module.exports = MyService
+</code></pre>
+<p>And Change <code>find()</code> Logic.</p>
+<pre class="prettyprint source lang-javascript"><code>const myService = this.$rapidfire.services.find(service => 'MyService' === service.constructor.id)
+myService.myMethod()
+</code></pre>
 </article>
 
 </section>

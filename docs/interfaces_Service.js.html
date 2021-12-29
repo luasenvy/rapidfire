@@ -102,6 +102,10 @@
                                 09.ReuseServiceFunction
                             </a>
                         
+                            <a class="dropdown-item" href="tutorial-10.FindMyClassWithUglifiedCode.html">
+                                10.FindMyClassWithUglifiedCode
+                            </a>
+                        
                             <a class="dropdown-item" href="tutorial-99.Examples.html">
                                 99.Examples
                             </a>
@@ -222,6 +226,11 @@ class Service extends EventEmitter {
      * @event RapidFire#service:load
      */
     this.emit('service:load', { service: this })
+  }
+
+  on(eventName, callback) {
+    if ('service:load' === eventName &amp;&amp; this.isReady) return callback({ service: this })
+    return super.on(eventName, callback)
   }
 }
 

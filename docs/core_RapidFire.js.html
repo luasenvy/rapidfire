@@ -102,6 +102,10 @@
                                 09.ReuseServiceFunction
                             </a>
                         
+                            <a class="dropdown-item" href="tutorial-10.FindMyClassWithUglifiedCode.html">
+                                10.FindMyClassWithUglifiedCode
+                            </a>
+                        
                             <a class="dropdown-item" href="tutorial-99.Examples.html">
                                 99.Examples
                             </a>
@@ -216,6 +220,7 @@ class RapidFire extends EventEmitter {
       bodyParser: { limit: '50mb' },
       querystringParser: {
         normalize: {
+          '': '',
           true: true,
           false: false,
           null: null,
@@ -352,188 +357,193 @@ class RapidFire extends EventEmitter {
     if (isDev) global._$rapidfire = this
 
     // ------------------------ Load Contollers
-    if (this.options.paths.controllers) {
-      const controllerFilenames = fs.readdirSync(this.options.paths.controllers)
+    try {
+      if (this.options.paths.controllers) {
+        const controllerFilenames = fs.readdirSync(this.options.paths.controllers)
 
-      const controllerPathnames = controllerFilenames
-        .flatMap(controllerFilename => this.getModulesRecursively({ parent: this.options.paths.controllers, filename: controllerFilename }))
-        .filter(Boolean)
+        const controllerPathnames = controllerFilenames
+          .flatMap(controllerFilename => this.getModulesRecursively({ parent: this.options.paths.controllers, filename: controllerFilename }))
+          .filter(Boolean)
 
-      for (const controllerPathname of controllerPathnames) {
-        const Controller = require(controllerPathname)
-        const controller = new Controller()
+        for (const controllerPathname of controllerPathnames) {
+          const Controller = require(controllerPathname)
+          const controller = new Controller()
 
-        // Register Middleware Default Variables
-        controller._$rapidfire = this
+          // Register Middleware Default Variables
+          controller._$rapidfire = this
 
-        this.controllers.push(controller)
-      }
-
-      // Init Controllers
-      for (const controller of this.controllers) {
-        await controller.init()
-        await controller.load()
-      }
-    }
-
-    // ------------------------ Load Loaders
-    if (this.options.paths.loaders) {
-      const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
-
-      const loaderPathnames = loaderFilenames
-        .flatMap(loaderFilename => this.getModulesRecursively({ parent: this.options.paths.loaders, filename: loaderFilename }))
-        .filter(Boolean)
-
-      for (const loaderPathname of loaderPathnames) {
-        const Loader = require(loaderPathname)
-        const loader = new Loader()
-
-        // Register Middleware Default Variables
-        loader._$rapidfire = this
-
-        this.loaders.push(loader)
-      }
-
-      // Init Loaders
-      for (const loader of this.loaders) {
-        await loader.init()
-        await loader.load()
-      }
-    }
-
-    // ------------------------ Built-in Request Pre Middlewares
-    const qsNormalizeKeywords = this.options.querystringParser.normalize
-    this.express.use((req, res, next) => {
-      if (req.originalUrl.includes('?')) {
-        const { search } = new URL(req.url, `${req.protocol}://${req.hostname}`)
-
-        req.query = qs.parse(search.substr(1), {
-          arrayLimit: 10000,
-          decoder(str, decoder, charset, type) {
-            const value = decoder(str, decoder, charset, type)
-
-            // Keyword Values Like `undefined`
-            if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
-
-            // Number
-            //  - Only Zero
-            //  - Not Zero Padded
-            if (/^(0|[1-9]([0-9]+)?)$/.test(value)) return parseFloat(value)
-
-            // Default String
-            return value
-          },
-        })
-      }
-
-      next()
-    })
-
-    this.express.use(bodyParser.json(this.options.bodyParser))
-
-    // ------------------------ Load Middlewares
-    if (this.options.paths.middlewares) {
-      const middlewareFilenames =
-        this.options.middlewares.length &lt;= 0
-          ? fs.readdirSync(this.options.paths.middlewares)
-          : this.options.middlewares.map(middlewareFilename => (middlewareFilename.endsWith('.js') ? middlewareFilename : `${middlewareFilename}.js`))
-
-      const middlewarePathnames = middlewareFilenames
-        .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.middlewares, filename: middlewareFilename }))
-        .filter(Boolean)
-
-      // Load Middlewares
-      for (const middlewarePathname of middlewarePathnames) {
-        const ImplMiddleware = require(middlewarePathname)
-        const implMiddleware = new ImplMiddleware()
-
-        if (!middlewareEnumTypes.includes(implMiddleware.type)) {
-          warn(
-            `"${ImplMiddleware.name}" Middleware Type Is Incorrect. Type Must Be One Of ${middlewareEnumTypes
-              .map(type => `"${type}"`)
-              .join(', ')}. This Middleware Will Setted Default Type "${Middleware.ENUM.TYPES.POST}".`
-          )
-          implMiddleware.type = Middleware.ENUM.TYPES.POST
+          this.controllers.push(controller)
         }
 
-        implMiddleware._$rapidfire = this
-        implMiddleware._controller = this.controllers.find(controller => controller instanceof ImplMiddleware.controller)
-
-        this.middlewares.push(implMiddleware)
-      }
-    }
-
-    // ------------------------ Init Pre Middlewares And Connect Pipelines To Express
-    for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.PRE)) {
-      await middleware.init()
-
-      for (const { pattern, method, pipe } of middleware.pipelines) {
-        if (pipe instanceof Function || Array.isArray(pipe)) {
-          const binder = this.express[method] || this.express.use
-
-          if (pattern) binder.call(this.express, pattern, pipe)
-          else binder.call(this.express, pipe)
+        // Init Controllers
+        for (const controller of this.controllers) {
+          await controller.init()
+          await controller.load()
         }
       }
-    }
 
-    // ------------------------ Install Controller / Bind Service
-    if (this.options.paths.services) {
-      const serviceFilenames = fs.readdirSync(this.options.paths.services)
+      // ------------------------ Load Loaders
+      if (this.options.paths.loaders) {
+        const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
 
-      const servicePathnames = serviceFilenames
-        .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))
-        .filter(Boolean)
+        const loaderPathnames = loaderFilenames
+          .flatMap(loaderFilename => this.getModulesRecursively({ parent: this.options.paths.loaders, filename: loaderFilename }))
+          .filter(Boolean)
 
-      // Load Services
-      for (const servicePathname of servicePathnames) {
-        const Service = require(servicePathname)
+        for (const loaderPathname of loaderPathnames) {
+          const Loader = require(loaderPathname)
+          const loader = new Loader()
 
-        const controller = this.controllers.find(controller => controller instanceof Service.controller)
-        const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
+          // Register Middleware Default Variables
+          loader._$rapidfire = this
 
-        const service = await serviceLoader.getInstance({ express, Service, controller })
+          this.loaders.push(loader)
+        }
 
-        service._$rapidfire = this
-        service._controller = controller
-
-        if (service.router) this.express.use(service.router)
-
-        this.services.push(service)
-      }
-
-      // Init Services
-      for (const service of this.services) {
-        await service.init()
-        await service.load()
-      }
-    }
-
-    // ------------------------ Init Post Middlewares And Connect Pipelines To Express
-    for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.POST)) {
-      await middleware.init()
-      await middleware.load()
-
-      for (const { pattern, method, pipe } of middleware.pipelines) {
-        if (pipe instanceof Function || Array.isArray(pipe)) {
-          const binder = this.express[method] || this.express.use
-
-          if (pattern) binder.call(this.express, pattern, pipe)
-          else binder.call(this.express, pipe)
+        // Init Loaders
+        for (const loader of this.loaders) {
+          await loader.init()
+          await loader.load()
         }
       }
-    }
 
-    // ------------------------ Init Error Handler Middlewares And Connect Pipelines To Express
-    for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.ERROR)) {
-      await middleware.init()
-      await middleware.load()
+      // ------------------------ Built-in Request Pre Middlewares
+      const qsNormalizeKeywords = this.options.querystringParser.normalize
+      this.express.use((req, res, next) => {
+        if (req.originalUrl.includes('?')) {
+          const { search } = new URL(req.url, `${req.protocol}://${req.hostname}`)
 
-      for (const { pipe } of middleware.pipelines) {
-        if (pipe instanceof Function || Array.isArray(pipe)) {
-          this.express.use(pipe)
+          req.query = qs.parse(search.substr(1), {
+            arrayLimit: 10000,
+            decoder(str, decoder, charset, type) {
+              const value = decoder(str, decoder, charset, type)
+
+              // Data Type Keywords
+              //  - true, false, null, undefined
+              if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
+
+              // Number Type Value
+              //  - Must Be Pass 'isNaN()' And Not Zero Padded Digits Or Empty.
+              if (!isNaN(value) &amp;&amp; !/^(-|\+)?0[0-9]+$/.test(value)) return parseFloat(value)
+
+              // String Value
+              return value
+            },
+          })
+        }
+
+        next()
+      })
+
+      this.express.use(bodyParser.json(this.options.bodyParser))
+
+      // ------------------------ Load Middlewares
+      if (this.options.paths.middlewares) {
+        const middlewareFilenames =
+          this.options.middlewares.length &lt;= 0
+            ? fs.readdirSync(this.options.paths.middlewares)
+            : this.options.middlewares.map(middlewareFilename => (middlewareFilename.endsWith('.js') ? middlewareFilename : `${middlewareFilename}.js`))
+
+        const middlewarePathnames = middlewareFilenames
+          .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.middlewares, filename: middlewareFilename }))
+          .filter(Boolean)
+
+        // Load Middlewares
+        for (const middlewarePathname of middlewarePathnames) {
+          const ImplMiddleware = require(middlewarePathname)
+          const implMiddleware = new ImplMiddleware()
+
+          if (!middlewareEnumTypes.includes(implMiddleware.type)) {
+            warn(
+              `"${ImplMiddleware.name}" Middleware Type Is Incorrect. Type Must Be One Of ${middlewareEnumTypes
+                .map(type => `"${type}"`)
+                .join(', ')}. This Middleware Will Setted Default Type "${Middleware.ENUM.TYPES.POST}".`
+            )
+            implMiddleware.type = Middleware.ENUM.TYPES.POST
+          }
+
+          implMiddleware._$rapidfire = this
+          implMiddleware._controller = this.controllers.find(controller => controller instanceof ImplMiddleware.controller)
+
+          this.middlewares.push(implMiddleware)
         }
       }
+
+      // ------------------------ Init Pre Middlewares And Connect Pipelines To Express
+      for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.PRE)) {
+        await middleware.init()
+
+        for (const { pattern, method, pipe } of middleware.pipelines) {
+          if (pipe instanceof Function || Array.isArray(pipe)) {
+            const binder = this.express[method] || this.express.use
+
+            if (pattern) binder.call(this.express, pattern, pipe)
+            else binder.call(this.express, pipe)
+          }
+        }
+      }
+
+      // ------------------------ Install Controller / Bind Service
+      if (this.options.paths.services) {
+        const serviceFilenames = fs.readdirSync(this.options.paths.services)
+
+        const servicePathnames = serviceFilenames
+          .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))
+          .filter(Boolean)
+
+        // Load Services
+        for (const servicePathname of servicePathnames) {
+          const Service = require(servicePathname)
+
+          const controller = this.controllers.find(controller => controller instanceof Service.controller)
+          const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
+
+          const service = await serviceLoader.getInstance({ express, Service, controller })
+
+          service._$rapidfire = this
+          service._controller = controller
+
+          if (service.router) this.express.use(service.router)
+
+          this.services.push(service)
+        }
+
+        // Init Services
+        for (const service of this.services) {
+          await service.init()
+          await service.load()
+        }
+      }
+
+      // ------------------------ Init Post Middlewares And Connect Pipelines To Express
+      for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.POST)) {
+        await middleware.init()
+        await middleware.load()
+
+        for (const { pattern, method, pipe } of middleware.pipelines) {
+          if (pipe instanceof Function || Array.isArray(pipe)) {
+            const binder = this.express[method] || this.express.use
+
+            if (pattern) binder.call(this.express, pattern, pipe)
+            else binder.call(this.express, pipe)
+          }
+        }
+      }
+
+      // ------------------------ Init Error Handler Middlewares And Connect Pipelines To Express
+      for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.ERROR)) {
+        await middleware.init()
+        await middleware.load()
+
+        for (const { pipe } of middleware.pipelines) {
+          if (pipe instanceof Function || Array.isArray(pipe)) {
+            this.express.use(pipe)
+          }
+        }
+      }
+    } catch (err) {
+      error(err)
+      throw err
     }
 
     // eslint-disable-next-line no-unused-vars

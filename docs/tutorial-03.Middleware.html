@@ -100,6 +100,10 @@
                                 09.ReuseServiceFunction
                             </a>
                         
+                            <a class="dropdown-item" href="tutorial-10.FindMyClassWithUglifiedCode.html">
+                                10.FindMyClassWithUglifiedCode
+                            </a>
+                        
                             <a class="dropdown-item" href="tutorial-99.Examples.html">
                                 99.Examples
                             </a>
@@ -131,7 +135,7 @@
             
             <nav>
                 
-                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-06.CustomInterface.html">06.CustomInterface</a></li><li><a href="tutorial-07.Lifecycle.html">07.Lifecycle</a></li><li><a href="tutorial-08.Events.html">08.Events</a></li><li><a href="tutorial-09.ReuseServiceFunction.html">09.ReuseServiceFunction</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
+                    <div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-01.GettingStart.html">01.GettingStart</a></li><li><a href="tutorial-02.ControllerAndService.html">02.ControllerAndService</a></li><li><a href="tutorial-03.Middleware.html">03.Middleware</a></li><li><a href="tutorial-04.ServiceLoader.html">04.ServiceLoader</a></li><li><a href="tutorial-05.UsingDatabase.html">05.UsingDatabase</a></li><li><a href="tutorial-06.CustomInterface.html">06.CustomInterface</a></li><li><a href="tutorial-07.Lifecycle.html">07.Lifecycle</a></li><li><a href="tutorial-08.Events.html">08.Events</a></li><li><a href="tutorial-09.ReuseServiceFunction.html">09.ReuseServiceFunction</a></li><li><a href="tutorial-10.FindMyClassWithUglifiedCode.html">10.FindMyClassWithUglifiedCode</a></li><li><a href="tutorial-99.Examples.html">99.Examples</a></li></ul></div>
                 
             </nav>
         </div>
@@ -205,6 +209,56 @@ class MyMiddleware extends Middleware {
   constructor() {
     // Set Middleware Type
     this.type = Middleware.ENUM.TYPES.PRE
+  }
+}
+
+module.exports = MyMiddleware
+</code></pre>
+<h3>Initialize After <code>constructor</code></h3>
+<p>If You Want To Use Some Variables Like <code>this.$rapidfire</code>, You Will Be Wait For Until Variable Is Assigned By Framework. This Variable Can't Use In <code>constructor</code>. Then, You Can Override <code>init()</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const {
+  Interfaces: { Middleware },
+} = require('@luasenvy/rapidfire')
+
+class MyMiddleware extends Middleware {
+  constructor({ router }) {
+    super()
+
+    // this.$rapidfire Is undefined.
+    // console.info(this.$rapidfire.app.options)
+  }
+
+  init() {
+    // `Rapidfire.Interfaces.Middleware.init()` Is Noop Function. But, Call `super.init()` For Consistency.
+    await super.init()
+
+    // This Time, this.$rapidfire Is Object
+    console.info(this.$rapidfire.app.options)
+  }
+}
+
+module.exports = MyMiddleware
+</code></pre>
+<h3>Override <code>load()</code></h3>
+<p>When Middleware Is Loaded, <code>middleware.isReady</code> Will Be A <code>true</code> and Emit <code>middleware:load</code> Event. If You Want Override It. Just Override.</p>
+<pre class="prettyprint source"><code>const {
+  Interfaces: { Middleware },
+} = require('@luasenvy/rapidfire')
+
+class MyMiddleware extends Middleware {
+  constructor({ router }) {
+    super()
+
+    // this.$rapidfire Is undefined.
+    // console.info(this.$rapidfire.app.options)
+  }
+
+  load() {
+    console.info('Something You Want...')
+
+    // `super.load()` Will Be `isReady` To `true` And Emit `middleware:load`.
+    // If You Don't Want This Process, Do Not Call `super.load()` Function.
+    await super.load()
   }
 }
 
