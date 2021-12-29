@@ -266,8 +266,8 @@ class RapidFire extends EventEmitter {
               if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
 
               // Number Type Value
-              //  - Must Be Pass 'isNaN()' And Not Zero Padded Digits
-              if (!isNaN(value) && !/^(-|\+)?0[0-9]+$/.test(value)) return parseFloat(value)
+              //  - Must Be Pass 'isNaN()' And Not Zero Padded Digits Or Empty.
+              if (!isNaN(value) && !/^((-|\+)?0[0-9]+)?$/.test(value)) return parseFloat(value)
 
               // String Value
               return value
