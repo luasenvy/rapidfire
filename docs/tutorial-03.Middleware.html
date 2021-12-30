@@ -228,7 +228,7 @@ class MyMiddleware extends Middleware {
     // console.info(this.$rapidfire.app.options)
   }
 
-  init() {
+  async init() {
     // `Rapidfire.Interfaces.Middleware.init()` Is Noop Function. But, Call `super.init()` For Consistency.
     await super.init()
 
@@ -253,7 +253,7 @@ class MyMiddleware extends Middleware {
     // console.info(this.$rapidfire.app.options)
   }
 
-  load() {
+  async load() {
     console.info('Something You Want...')
 
     // `super.load()` Will Be `isReady` To `true` And Emit `middleware:load`.

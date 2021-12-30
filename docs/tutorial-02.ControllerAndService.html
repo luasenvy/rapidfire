@@ -231,7 +231,7 @@ class MyService extends Service {
     // console.info(this.$rapidfire.app.options)
   }
 
-  init() {
+  async init() {
     // `Rapidfire.Interfaces.Service.init()` Is Noop Function. But, Call `super.init()` For Consistency.
     await super.init()
 
@@ -256,7 +256,7 @@ class MyService extends Service {
     // console.info(this.$rapidfire.app.options)
   }
 
-  load() {
+  async load() {
     console.info('Something You Want...')
 
     // `super.load()` Will Be `isReady` To `true` And Emit `service:load`.
