@@ -1,3 +1,3 @@
-module.exports = {
-  RapidFire: require('./RapidFire'),
-}
+const RapidFire = require('./RapidFire')
+
+module.exports = { RapidFire }

@@ -1,29 +1,29 @@
 {
   "name": "@luasenvy/rapidfire",
-  "version": "0.1.74",
+  "version": "0.2.0",
   "description": "express based web server framework",
   "main": "src/index.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "body-parser": "^1.19.1",
+    "body-parser": "^1.19.2",
     "debug": "^4.3.3",
-    "express": "^4.17.2"
+    "express": "^4.17.3"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.16.5",
-    "axios": "^0.24.0",
-    "better-docs": "^2.3.2",
-    "eslint": "^8.5.0",
-    "eslint-config-prettier": "^8.3.0",
+    "@babel/eslint-parser": "^7.17.0",
+    "axios": "^0.26.0",
+    "better-docs": "2.3.2",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
     "imagemin-lint-staged": "^0.4.0",
-    "jest": "^27.4.5",
-    "jsdoc": "^3.6.7",
+    "jest": "^27.5.1",
+    "jsdoc": "^3.6.10",
     "jsdoc-mermaid": "^1.0.0",
-    "lint-staged": "^12.1.4",
+    "lint-staged": "^12.3.4",
     "prettier": "^2.5.1"
   },
   "scripts": {

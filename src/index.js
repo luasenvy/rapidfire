@@ -1,5 +1,4 @@
-const { RapidFire } = require('./core')
-
+const RapidFire = require('./core')
 const Interfaces = require('./interfaces')
 
 /**
@@ -11,4 +10,5 @@ const Interfaces = require('./interfaces')
  * @property {ServiceLoader} Interfaces.ServiceLoader ServiceLoader Interface
  * @property {Middleware} Interfaces.Middleware Middleware Interface
  */
+
 module.exports = { RapidFire, Interfaces }

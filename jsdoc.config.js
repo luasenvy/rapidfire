@@ -1,4 +1,4 @@
-module.exports = {
+const options = {
   plugins: ['node_modules/jsdoc/plugins/markdown'],
   source: {
     include: ['src'],
@@ -27,3 +27,5 @@ module.exports = {
     },
   },
 }
+
+module.exports = options

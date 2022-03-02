@@ -1,6 +1,6 @@
-module.exports = {
-  Controller: require('./Controller'),
-  Middleware: require('./Middleware'),
-  ServiceLoader: require('./ServiceLoader'),
-  Service: require('./Service'),
-}
+const Controller = require('./Controller')
+const Middleware = require('./Middleware')
+const ServiceLoader = require('./ServiceLoader')
+const Service = require('./Service')
+
+module.exports = { Controller, Middleware, ServiceLoader, Service }

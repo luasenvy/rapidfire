@@ -4,15 +4,20 @@ const path = require('path')
 const { URL } = require('url')
 const qs = require('qs')
 
+const http = require('http')
+const https = require('https')
+
 const express = require('express')
-const debug = require('debug')('rapidfire')
-const error = require('debug')('rapidfire:error')
-const warn = require('debug')('rapidfire:warning')
+const Debug = require('debug')
 
 const bodyParser = require('body-parser')
 
 const EventEmitter = require('events')
 const { ServiceLoader, Controller, Middleware } = require('../interfaces')
+
+const debug = Debug('rapidfire')
+const error = Debug('rapidfire:error')
+const warn = Debug('rapidfire:warning')
 
 const middlewareEnumTypes = Object.values(Middleware.ENUM.TYPES)
 
@@ -27,6 +32,9 @@ const middlewareEnumTypes = Object.values(Middleware.ENUM.TYPES)
  * @property  {String}    paths.loaders        RapidFire User Define Loaders Path
  * @property  {Array}     middlewares          RapidFire Ordered Middleware Filenames In `options.paths.middlewares`
  * @property  {Array}     services             RapidFire Ordered Service Filenames In `options.paths.services`
+ * @property  {Array}     tls                  [TLS Connection Options](https://nodejs.org/dist/latest/docs/api/tls.html#tlsconnectoptions-callback)
+ * @property  {Array}     bodyParser           [body-parser](https://www.npmjs.com/package/body-parser) "json()" Options
+ * @property  {Array}     querystringParser    The Querystring Parameter Value As `Key`. Convert To Datatype And Value As `Value`. e.g.) If You Setted `{ 'null': 0 }`. `/api?b=null` => req.query.b === 0
  */
 
 /**
@@ -62,6 +70,7 @@ class RapidFire extends EventEmitter {
       middlewares: [],
       services: [],
       bodyParser: { limit: '50mb' },
+      tls: false, // https://nodejs.org/dist/latest/docs/api/tls.html#tlsconnectoptions-callback
       querystringParser: {
         normalize: {
           '': '',
@@ -342,12 +351,15 @@ class RapidFire extends EventEmitter {
           const controller = this.controllers.find(controller => controller instanceof Service.controller)
           const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
 
-          const service = await serviceLoader.getInstance({ express, Service, controller })
+          const router = express.Router()
+
+          const service = await serviceLoader.getInstance({ router, Service, controller })
 
           service._$rapidfire = this
           service._controller = controller
+          service._router = router
 
-          if (service.router) this.express.use(service.router)
+          if (service._router.stack.length) this.express.use(service._router)
 
           this.services.push(service)
         }
@@ -406,17 +418,20 @@ class RapidFire extends EventEmitter {
       res.status(err.code || 500).send(err.message)
     })
 
-    this.server = this.express.listen(this.options.port, this.options.host, () => {
-      debug(`Server listening on http://${this.options.host}:${this.options.port}`)
+    const afterListen = () => {
+      debug(`Server listening on http${this.options.tls ? 's' : ''}://${this.options.host}:${this.options.port}`)
 
       /**
-       * HttpServer Is Ready To Listen
+       * Server Is Ready To Listen
        *
        * @event RapidFire#open
        */
       this.emit('open')
       this.isReady = true
-    })
+    }
+
+    if (this.options.tls) this.server = https.createServer(this.options.tls, this.express)
+    else this.server = http.createServer(this.express)
 
     this.server.on('close', () => {
       this.server = null
@@ -430,6 +445,8 @@ class RapidFire extends EventEmitter {
       this.emit('close')
       this.isReady = false
     })
+
+    this.server.listen(this.options.port, this.options.host, afterListen)
   }
 
   /**
@@ -459,6 +476,7 @@ class RapidFire extends EventEmitter {
     this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
 
     if (this.server) this.server.close()
+
     this.express = express()
     this.server = null
   }

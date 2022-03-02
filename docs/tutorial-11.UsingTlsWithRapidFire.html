@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>:: RapidFire :: Express Based WebServer Framework 04.ServiceLoader</title>
+  <title>:: RapidFire :: Express Based WebServer Framework 11.UsingTlsWithRapidFire</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -147,109 +147,31 @@
             <div class="content">
                 <header class="page-title">
                     <p>Tutorial</p>
-                    <h1>04.ServiceLoader</h1>
+                    <h1>11.UsingTlsWithRapidFire</h1>
                 </header>
                 <section>
 
 <article>
-    <h2>ServiceLoader</h2>
-<p><code>ServiceLoader</code> Is Useful When You Want To Change Service Contructor Parameter. And <code>User Define ServiceLoader</code> Must Be Place In Rapidfire Configuration <code>paths.loaders</code> Path.</p>
-<pre class="prettyprint source lang-javascript"><code>const {
-  Interfaces: { ServiceLoader },
-} = require('@luasenvy/rapidfire')
-
-class MyServiceLoader extends ServiceLoader {
-  constructor() {
-    super()
-  }
-
-  // Implement `load` Function. Paramter Is 'express' And 'Service'.
-  //   The `Service` Is Delivered To The Set By This Loader.
-  //   This Function Is Required.
-  load({ express, Service }) {
-    // You Can Define AnyThing. But Must Return `Service` Instance.
-    return new Service({ some: 'thing', you: 'need', router: express.Router() })
-  }
-}
-
-module.exports = MyServiceLoader
+    <h2>FindMyClassWithUglifiedCode</h2>
+<p>Get Cert Files:</p>
+<pre class="prettyprint source lang-javascript"><code>sudo openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout cert.key -out cert.crt
 </code></pre>
-<h3>Set <code>ServiceLoader</code></h3>
-<p>Just Change <code>loader</code> Static Property.</p>
-<pre class="prettyprint source lang-javascript"><code>const {
-  Interfaces: { Service },
-} = require('@luasenvy/rapidfire')
+<p>Provide <a href="https://nodejs.org/dist/latest/docs/api/tls.html#tlsconnectoptions-callback">Options</a> And Start Server.:</p>
+<pre class="prettyprint source lang-javascript"><code>const fs = require('fs')
+const path = require('path')
 
-const MyServiceLoader = require('../some/your/loaders/path/MyServiceLoader')
+const tlsCert = fs.readFileSync(path.join(__dirname, './test/certs/cert.crt'))
+const tlsKey = fs.readFileSync(path.join(__dirname, './test/certs/cert.key'))
 
-class MyService extends Service {
-  static loader = MyServiceLoader
+const { RapidFire } = require('./src/core')
 
-  constructor({ some, you, router }) {
-    super()
+const rapidFire = new RapidFire({
+  host: '0.0.0.0',
+  port: 8443,
+  tls: { cert: tlsCert, key: tlsKey },
+})
 
-    router.get('/hello', (req, res, next) => this.sayThingNeed(req, res).catch(next))
-
-    // Now, You Can Use Custom Paramters.
-    this.thingneed = some + you
-  }
-
-  sayThingNeed(req, res) {
-    res.send(this.thingneed)
-  }
-}
-
-module.exports = MyService
-</code></pre>
-<h3>Initialize After <code>constructor</code></h3>
-<p>If You Want To Use Some Variables Like <code>this.$rapidfire</code>, You Will Be Wait For Until Variable Is Assigned By Framework. This Variable Can't Use In <code>constructor</code>. Then, You Can Override <code>init()</code>.</p>
-<pre class="prettyprint source lang-javascript"><code>const {
-  Interfaces: { ServiceLoader },
-} = require('@luasenvy/rapidfire')
-
-class MyServiceLoader extends ServiceLoader {
-  constructor({ router }) {
-    super()
-
-    // this.$rapidfire Is undefined.
-    // console.info(this.$rapidfire.app.options)
-  }
-
-  init() {
-    // `Rapidfire.Interfaces.ServiceLoader.init()` Is Noop Function. But, Call `super.init()` For Consistency.
-    await super.init()
-
-    // This Time, this.$rapidfire Is Object
-    console.info(this.$rapidfire.app.options)
-  }
-}
-
-module.exports = MyServiceLoader
-</code></pre>
-<h3>Override <code>load()</code></h3>
-<p>When ServiceLoader Is Loaded, <code>serviceLoader.isReady</code> Will Be A <code>true</code> and Emit <code>serviceLoader:load</code> Event. If You Want Override It. Just Override.</p>
-<pre class="prettyprint source"><code>const {
-  Interfaces: { ServiceLoader },
-} = require('@luasenvy/rapidfire')
-
-class MyServiceLoader extends ServiceLoader {
-  constructor({ router }) {
-    super()
-
-    // this.$rapidfire Is undefined.
-    // console.info(this.$rapidfire.app.options)
-  }
-
-  async load() {
-    console.info('Something You Want...')
-
-    // `super.load()` Will Be `isReady` To `true` And Emit `serviceLoader:load`.
-    // If You Don't Want This Process, Do Not Call `super.load()` Function.
-    await super.load()
-  }
-}
-
-module.exports = MyServiceLoader
+rapidFire.ignition()
 </code></pre>
 </article>
 

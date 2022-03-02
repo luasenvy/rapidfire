@@ -47,8 +47,8 @@ class ServiceLoader extends EventEmitter {
    * @param {Express} options.express Express Module
    * @param {Service} options.Service Service Class
    */
-  getInstance({ express, Service, controller }) {
-    return new Service({ router: express.Router(), controller })
+  getInstance({ router, controller, Service }) {
+    return new Service({ router, controller })
   }
 }
 

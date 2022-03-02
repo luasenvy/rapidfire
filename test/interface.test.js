@@ -1,46 +1,56 @@
-const {
-  Interfaces: { Service, Controller, ServiceLoader, Middleware },
-} = require('../src/index')
+const fs = require('fs')
+const path = require('path')
 
-class MyController extends Controller {
-  constructor() {
-    super()
-  }
-}
+const axios = require('axios')
+const https = require('https')
 
-class MyServiceLoader extends ServiceLoader {
-  constructor() {
-    super()
-  }
-}
+const tlsCert = fs.readFileSync(path.join(__dirname, './certs/cert.crt'))
+const tlsKey = fs.readFileSync(path.join(__dirname, './certs/cert.key'))
 
-class MyService extends Service {
-  static loader = MyServiceLoader
+const $axios = axios.create({
+  baseURL: 'https://localhost:8443',
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false,
+  }), // self signed test
+})
 
-  static controller = MyController
+const { RapidFire } = require('../src/core')
+const MyService = require('./services/MyService')
+const MyServiceLoader = require('./loaders/MyServiceLoader')
+const MyController = require('./controllers/MyController')
 
-  constructor() {
-    super()
-  }
-}
-
-class MyMiddleware extends Middleware {
-  constructor() {
-    super()
-
-    this.type = 'helloworld'
-  }
-}
+const rapidFire = new RapidFire({
+  host: 'localhost',
+  port: 8443,
+  paths: {
+    services: path.join(__dirname, './services'),
+    loaders: path.join(__dirname, './loaders'),
+    controllers: path.join(__dirname, './controllers'),
+    middlewares: path.join(__dirname, './middlewares'),
+  },
+  tls: { cert: tlsCert, key: tlsKey },
+})
 
 describe('unit/interfaces', () => {
-  test('"Service" Interface implementation Test', async next => {
+  test('"Service" Interface implementation Test', async () => {
     expect(MyService.loader).toEqual(MyServiceLoader)
     expect(MyService.controller).toEqual(MyController)
-
-    next()
   })
 
-  test('"Middleware" Interface implementation Test', async next => {
-    next()
+  test('api call test', done => {
+    rapidFire.on('open', async () => {
+      try {
+        const { data, headers } = await $axios.get('/api/hello')
+        console.info(data, headers, '@@@@@@@@@@@@@@@@@')
+      } catch (err) {
+        console.error(err.response?.data || err.message)
+      } finally {
+        rapidFire.extinguish()
+      }
+    })
+
+    rapidFire.on('close', done)
+
+    rapidFire.ignition()
   })
 })

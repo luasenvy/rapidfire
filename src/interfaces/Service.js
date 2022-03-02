@@ -33,6 +33,7 @@ class Service extends EventEmitter {
 
     this._$rapidfire = null
     this._controller = null
+    this._router = null
 
     this.isReady = false
   }
