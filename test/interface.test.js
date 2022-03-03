@@ -41,9 +41,9 @@ describe('unit/interfaces', () => {
     rapidFire.on('open', async () => {
       try {
         const { data, headers } = await $axios.get('/api/hello')
-        console.info(data, headers, '@@@@@@@@@@@@@@@@@')
+        expect(data).toEqual('world')
       } catch (err) {
-        console.error(err.response?.data || err.message)
+        console.error(err?.response?.data || err.message)
       } finally {
         rapidFire.extinguish()
       }
