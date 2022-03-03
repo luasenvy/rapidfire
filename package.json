@@ -27,7 +27,7 @@
     "prettier": "^2.5.1"
   },
   "scripts": {
-    "docs": "rm -rf `ls -rtd docs/* | grep -v -e CNAME` && jsdoc -c jsdoc.config.js",
+    "docs": "rm -rf `ls -rtd docs/* | grep -v -e CNAME` && jsdoc -c jsdoc.config.json",
     "test": "jest --rootDir test"
   },
   "repository": {

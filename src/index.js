@@ -1,4 +1,4 @@
-const RapidFire = require('./core')
+const RapidFire = require('./core/RapidFire')
 const Interfaces = require('./interfaces')
 
 /**

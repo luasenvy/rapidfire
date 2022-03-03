@@ -4,7 +4,7 @@ const path = require('path')
 const tlsCert = fs.readFileSync(path.join(__dirname, './certs/cert.crt'))
 const tlsKey = fs.readFileSync(path.join(__dirname, './certs/cert.key'))
 
-const { RapidFire } = require('../src/core')
+const { RapidFire } = require('../src/index.js')
 
 const rapidFire = new RapidFire({
   host: 'localhost',

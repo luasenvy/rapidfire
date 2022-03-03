@@ -14,7 +14,7 @@ const $axios = axios.create({
   }), // self signed test
 })
 
-const { RapidFire } = require('../src/core')
+const { RapidFire } = require('../src/index.js')
 const MyService = require('./services/MyService')
 const MyServiceLoader = require('./loaders/MyServiceLoader')
 const MyController = require('./controllers/MyController')

@@ -164,6 +164,7 @@ const path = require('path')
 const { URL } = require('url')
 const qs = require('qs')
 
+const http = require('http')
 const https = require('https')
 
 const express = require('express')
@@ -590,7 +591,7 @@ class RapidFire extends EventEmitter {
     }
 
     if (this.options.tls) this.server = https.createServer(this.options.tls, this.express)
-    else this.server = this.express
+    else this.server = http.createServer(this.express)
 
     this.server.on('close', () => {
       this.server = null
@@ -635,6 +636,7 @@ class RapidFire extends EventEmitter {
     this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
 
     if (this.server) this.server.close()
+
     this.express = express()
     this.server = null
   }
