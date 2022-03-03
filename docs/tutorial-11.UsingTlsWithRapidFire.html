@@ -156,7 +156,7 @@
 <p>Get Cert Files:</p>
 <pre class="prettyprint source lang-javascript"><code>sudo openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout cert.key -out cert.crt
 </code></pre>
-<p>Provide <a href="https://nodejs.org/dist/latest/docs/api/tls.html#tlsconnectoptions-callback">Options</a> And Start Server.:</p>
+<p>Provide <a href="https://nodejs.org/dist/latest/docs/api/tls.html#tlscreatesecurecontextoptions">Options</a> And Start Server.:</p>
 <pre class="prettyprint source lang-javascript"><code>const fs = require('fs')
 const path = require('path')
 
