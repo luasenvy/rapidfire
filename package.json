@@ -14,24 +14,24 @@
     "test": "test"
   },
   "dependencies": {
-    "body-parser": "^1.19.2",
-    "debug": "^4.3.3",
-    "express": "^4.17.3"
+    "body-parser": "^1.20.0",
+    "debug": "^4.3.4",
+    "express": "^4.18.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
-    "axios": "^0.26.0",
+    "axios": "^0.27.2",
     "better-docs": "2.3.2",
-    "eslint": "^8.10.0",
-    "eslint-config-prettier": "^8.4.0",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
     "imagemin-lint-staged": "^0.4.0",
-    "jest": "^27.5.1",
+    "jest": "^28.0.3",
     "jsdoc": "^3.6.10",
     "jsdoc-mermaid": "^1.0.0",
-    "lint-staged": "^12.3.4",
-    "prettier": "^2.5.1"
+    "lint-staged": "^12.4.1",
+    "prettier": "^2.6.2"
   },
   "scripts": {
     "docs": "rm -rf `ls -rtd docs/* | grep -v -e CNAME` && jsdoc -c jsdoc.config.json",
