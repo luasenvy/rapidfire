@@ -201,6 +201,10 @@ class RapidFire extends EventEmitter {
     this.isReady = false
   }
 
+  async loadModule({ pathname }) {
+    return require(pathname)
+  }
+
   /**
    * StartUp RapidFire Framework.
    */
@@ -219,7 +223,7 @@ class RapidFire extends EventEmitter {
           .filter(Boolean)
 
         for (const controllerPathname of controllerPathnames) {
-          const Controller = require(controllerPathname)
+          const Controller = await this.loadModule({ pathname: controllerPathname })
           const controller = new Controller()
 
           // Register Middleware Default Variables
@@ -244,7 +248,7 @@ class RapidFire extends EventEmitter {
           .filter(Boolean)
 
         for (const loaderPathname of loaderPathnames) {
-          const Loader = require(loaderPathname)
+          const Loader = await this.loadModule({ pathname: loaderPathname })
           const loader = new Loader()
 
           // Register Middleware Default Variables
@@ -303,7 +307,7 @@ class RapidFire extends EventEmitter {
 
         // Load Middlewares
         for (const middlewarePathname of middlewarePathnames) {
-          const ImplMiddleware = require(middlewarePathname)
+          const ImplMiddleware = await this.loadModule({ pathname: middlewarePathname })
           const implMiddleware = new ImplMiddleware()
 
           if (!middlewareEnumTypes.includes(implMiddleware.type)) {
@@ -346,7 +350,7 @@ class RapidFire extends EventEmitter {
 
         // Load Services
         for (const servicePathname of servicePathnames) {
-          const Service = require(servicePathname)
+          const Service = await this.loadModule({ pathname: servicePathname })
 
           const controller = this.controllers.find(controller => controller instanceof Service.controller)
           const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
