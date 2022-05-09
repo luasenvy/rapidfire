@@ -1,3 +1,12 @@
+/* **************************************************************************
+ *   ██╗  ███╗   ███╗  ██████╗    ██████╗   ██████╗   ████████╗  ███████╗   *
+ *   ██║  ████╗ ████║  ██╔══██╗  ██╔═══██╗  ██╔══██╗  ╚══██╔══╝  ██╔════╝   *
+ *   ██║  ██╔████╔██║  ██████╔╝  ██║   ██║  ██████╔╝     ██║     ███████╗   *
+ *   ██║  ██║╚██╔╝██║  ██╔═══╝   ██║   ██║  ██╔══██╗     ██║     ╚════██║   *
+ *   ██║  ██║ ╚═╝ ██║  ██║       ╚██████╔╝  ██║  ██║     ██║     ███████║   *
+ *   ╚═╝  ╚═╝     ╚═╝  ╚═╝        ╚═════╝   ╚═╝  ╚═╝     ╚═╝     ╚══════╝   *
+ ************************************************************************** */
+
 const fs = require('fs')
 const path = require('path')
 
@@ -15,12 +24,28 @@ const bodyParser = require('body-parser')
 const EventEmitter = require('events')
 const { ServiceLoader, Controller, Middleware } = require('../interfaces')
 
+/* **************************************************************************
+ *                  ██╗   ██╗   █████╗   ██████╗   ███████╗                 *
+ *                  ██║   ██║  ██╔══██╗  ██╔══██╗  ██╔════╝                 *
+ *                  ██║   ██║  ███████║  ██████╔╝  ███████╗                 *
+ *                  ╚██╗ ██╔╝  ██╔══██║  ██╔══██╗  ╚════██║                 *
+ *                   ╚████╔╝   ██║  ██║  ██║  ██║  ███████║                 *
+ *                    ╚═══╝    ╚═╝  ╚═╝  ╚═╝  ╚═╝  ╚══════╝                 *
+ ************************************************************************** */
 const debug = Debug('rapidfire')
 const error = Debug('rapidfire:error')
 const warn = Debug('rapidfire:warning')
 
 const middlewareEnumTypes = Object.values(Middleware.ENUM.TYPES)
 
+/* **************************************************************************
+ *                      ██████╗   ██╗   ██╗  ███╗   ██╗                     *
+ *                      ██╔══██╗  ██║   ██║  ████╗  ██║                     *
+ *                      ██████╔╝  ██║   ██║  ██╔██╗ ██║                     *
+ *                      ██╔══██╗  ██║   ██║  ██║╚██╗██║                     *
+ *                      ██║  ██║  ╚██████╔╝  ██║ ╚████║                     *
+ *                      ╚═╝  ╚═╝   ╚═════╝   ╚═╝  ╚═══╝                     *
+ ************************************************************************** */
 /**
  * @typedef   {Object}    RapidFireOptions
  * @property  {Array}     isDev                RapidFire Development Mode
@@ -172,6 +197,29 @@ class RapidFire extends EventEmitter {
      * @type {Array}
      */
     this.middlewares = []
+    /**
+     * RapidFire Framework Running pre Middleware Instances
+     *
+     * @member
+     * @type {Array}
+     */
+    this.preMiddlewares = []
+
+    /**
+     * RapidFire Framework Running Post Middleware Instances
+     *
+     * @member
+     * @type {Array}
+     */
+    this.postMiddlewares = []
+
+    /**
+     * RapidFire Framework Running Error Handler Middleware Instances
+     *
+     * @member
+     * @type {Array}
+     */
+    this.errorHandlers = []
 
     const defaultServiceLoader = new ServiceLoader()
     defaultServiceLoader._$rapidfire = this
@@ -205,6 +253,217 @@ class RapidFire extends EventEmitter {
     return require(pathname)
   }
 
+  async loadControllers() {
+    const controllerFilenames = fs.readdirSync(this.options.paths.controllers)
+
+    const controllerPathnames = controllerFilenames
+      .flatMap(controllerFilename => this.getModulesRecursively({ parent: this.options.paths.controllers, filename: controllerFilename }))
+      .filter(Boolean)
+
+    for (const controllerPathname of controllerPathnames) {
+      const Controller = await this.loadModule({ pathname: controllerPathname })
+      const controller = new Controller()
+
+      // Register Middleware Default Variables
+      controller._$rapidfire = this
+
+      this.controllers.push(controller)
+    }
+
+    // Init Controllers
+    for (const controller of this.controllers) {
+      await controller.init()
+      await controller.load()
+    }
+  }
+
+  async loadServiceLoaders() {
+    const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
+
+    const loaderPathnames = loaderFilenames
+      .flatMap(loaderFilename => this.getModulesRecursively({ parent: this.options.paths.loaders, filename: loaderFilename }))
+      .filter(Boolean)
+
+    for (const loaderPathname of loaderPathnames) {
+      const Loader = await this.loadModule({ pathname: loaderPathname })
+      const loader = new Loader()
+
+      // Register Middleware Default Variables
+      loader._$rapidfire = this
+
+      this.loaders.push(loader)
+    }
+
+    // Init Loaders
+    for (const loader of this.loaders) {
+      await loader.init()
+      await loader.load()
+    }
+  }
+
+  async loadMiddlewares() {
+    const middlewareFilenames =
+      this.options.middlewares.length <= 0
+        ? fs.readdirSync(this.options.paths.middlewares)
+        : this.options.middlewares.map(middlewareFilename => (middlewareFilename.endsWith('.js') ? middlewareFilename : `${middlewareFilename}.js`))
+
+    const middlewarePathnames = middlewareFilenames
+      .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.middlewares, filename: middlewareFilename }))
+      .filter(Boolean)
+
+    // Load Middlewares
+    for (const middlewarePathname of middlewarePathnames) {
+      const ImplMiddleware = await this.loadModule({ pathname: middlewarePathname })
+      const implMiddleware = new ImplMiddleware()
+
+      if (!middlewareEnumTypes.includes(implMiddleware.type)) {
+        warn(
+          `"${ImplMiddleware.name}" Middleware Type Is Incorrect. Type Must Be One Of ${middlewareEnumTypes
+            .map(type => `"${type}"`)
+            .join(', ')}. This Middleware Will Setted Default Type "${Middleware.ENUM.TYPES.POST}".`
+        )
+        implMiddleware.type = Middleware.ENUM.TYPES.POST
+      }
+
+      implMiddleware._$rapidfire = this
+      implMiddleware._controller = this.controllers.find(controller => controller instanceof ImplMiddleware.controller)
+
+      this.middlewares.push(implMiddleware)
+
+      switch (ImplMiddleware.type) {
+        case Middleware.ENUM.TYPES.PRE: {
+          this.preMiddlewares.push(implMiddleware)
+          break
+        }
+        case Middleware.ENUM.TYPES.POST: {
+          this.postMiddlewares.push(implMiddleware)
+          break
+        }
+        case Middleware.ENUM.TYPES.ERROR: {
+          this.errorHandlers.push(implMiddleware)
+          break
+        }
+      }
+    }
+  }
+
+  async installServices() {
+    const serviceFilenames = fs.readdirSync(this.options.paths.services)
+
+    const servicePathnames = serviceFilenames
+      .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))
+      .filter(Boolean)
+
+    // Load Services
+    for (const servicePathname of servicePathnames) {
+      const Service = await this.loadModule({ pathname: servicePathname })
+
+      const controller = this.controllers.find(controller => controller instanceof Service.controller)
+      const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
+
+      const router = express.Router()
+
+      const service = await serviceLoader.getInstance({ router, Service, controller })
+
+      service._$rapidfire = this
+      service._controller = controller
+      service._router = router
+
+      if (service._router.stack.length) this.express.use(service._router)
+
+      this.services.push(service)
+    }
+
+    // Init Services
+    for (const service of this.services) {
+      await service.init()
+      await service.load()
+    }
+  }
+
+  async installMiddlewares({ middlewares }) {
+    for (const middleware of middlewares) {
+      await middleware.init()
+      await middleware.load()
+
+      for (const { pattern, method, pipe } of middleware.pipelines) {
+        if (pipe instanceof Function || Array.isArray(pipe)) {
+          const binder = this.express[method] || this.express.use
+
+          if (pattern) binder.call(this.express, pattern, pipe)
+          else binder.call(this.express, pipe)
+        }
+      }
+    }
+  }
+
+  async installErrorHandlers({ errorHandlers }) {
+    for (const errorHandler of errorHandlers) {
+      await errorHandler.init()
+      await errorHandler.load()
+
+      for (const { pipe } of errorHandler.pipelines) {
+        if (pipe instanceof Function || Array.isArray(pipe)) {
+          this.express.use(pipe)
+        }
+      }
+    }
+  }
+
+  async installQuerystringParser() {
+    const qsNormalizeKeywords = this.options.querystringParser.normalize
+    this.express.use((req, res, next) => {
+      if (req.originalUrl.includes('?')) {
+        const { search } = new URL(req.url, `${req.protocol}://${req.hostname}`)
+
+        req.query = qs.parse(search.substr(1), {
+          arrayLimit: 10000,
+          decoder(str, decoder, charset, type) {
+            const value = decoder(str, decoder, charset, type)
+
+            // Data Type Keywords
+            //  - true, false, null, undefined
+            if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
+
+            // Number Type Value
+            //  - Must Be Pass 'isNaN()' And Not Zero Padded Digits Or Empty.
+            if (!isNaN(value) && !/^(-|\+)?0[0-9]+$/.test(value)) return parseFloat(value)
+
+            // String Value
+            return value
+          },
+        })
+      }
+
+      next()
+    })
+  }
+
+  onListen() {
+    debug(`Server listening on http${this.options.tls ? 's' : ''}://${this.options.host}:${this.options.port}`)
+
+    /**
+     * Server Is Ready To Listen
+     *
+     * @event RapidFire#open
+     */
+    this.emit('open')
+    this.isReady = true
+  }
+
+  onClose() {
+    this.server = null
+    debug('Server Closed.')
+
+    /**
+     * HttpServer Is Stop To Listen
+     *
+     * @event RapidFire#close
+     */
+    this.emit('close')
+    this.isReady = false
+  }
+
   /**
    * StartUp RapidFire Framework.
    */
@@ -213,194 +472,34 @@ class RapidFire extends EventEmitter {
 
     if (isDev) global._$rapidfire = this
 
-    // ------------------------ Load Contollers
     try {
-      if (this.options.paths.controllers) {
-        const controllerFilenames = fs.readdirSync(this.options.paths.controllers)
+      // ------------------------ Load Contollers
+      if (this.options.paths.controllers) await this.loadControllers()
 
-        const controllerPathnames = controllerFilenames
-          .flatMap(controllerFilename => this.getModulesRecursively({ parent: this.options.paths.controllers, filename: controllerFilename }))
-          .filter(Boolean)
-
-        for (const controllerPathname of controllerPathnames) {
-          const Controller = await this.loadModule({ pathname: controllerPathname })
-          const controller = new Controller()
-
-          // Register Middleware Default Variables
-          controller._$rapidfire = this
-
-          this.controllers.push(controller)
-        }
-
-        // Init Controllers
-        for (const controller of this.controllers) {
-          await controller.init()
-          await controller.load()
-        }
-      }
-
-      // ------------------------ Load Loaders
-      if (this.options.paths.loaders) {
-        const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
-
-        const loaderPathnames = loaderFilenames
-          .flatMap(loaderFilename => this.getModulesRecursively({ parent: this.options.paths.loaders, filename: loaderFilename }))
-          .filter(Boolean)
-
-        for (const loaderPathname of loaderPathnames) {
-          const Loader = await this.loadModule({ pathname: loaderPathname })
-          const loader = new Loader()
-
-          // Register Middleware Default Variables
-          loader._$rapidfire = this
-
-          this.loaders.push(loader)
-        }
-
-        // Init Loaders
-        for (const loader of this.loaders) {
-          await loader.init()
-          await loader.load()
-        }
-      }
+      // ------------------------ Load ServiceLoaders
+      if (this.options.paths.loaders) await this.loadServiceLoaders()
 
       // ------------------------ Built-in Request Pre Middlewares
-      const qsNormalizeKeywords = this.options.querystringParser.normalize
-      this.express.use((req, res, next) => {
-        if (req.originalUrl.includes('?')) {
-          const { search } = new URL(req.url, `${req.protocol}://${req.hostname}`)
+      // querystring-parser
+      this.installQuerystringParser()
 
-          req.query = qs.parse(search.substr(1), {
-            arrayLimit: 10000,
-            decoder(str, decoder, charset, type) {
-              const value = decoder(str, decoder, charset, type)
-
-              // Data Type Keywords
-              //  - true, false, null, undefined
-              if (value in qsNormalizeKeywords) return qsNormalizeKeywords[value]
-
-              // Number Type Value
-              //  - Must Be Pass 'isNaN()' And Not Zero Padded Digits Or Empty.
-              if (!isNaN(value) && !/^(-|\+)?0[0-9]+$/.test(value)) return parseFloat(value)
-
-              // String Value
-              return value
-            },
-          })
-        }
-
-        next()
-      })
-
+      // body-parser
       this.express.use(bodyParser.json(this.options.bodyParser))
 
       // ------------------------ Load Middlewares
-      if (this.options.paths.middlewares) {
-        const middlewareFilenames =
-          this.options.middlewares.length <= 0
-            ? fs.readdirSync(this.options.paths.middlewares)
-            : this.options.middlewares.map(middlewareFilename => (middlewareFilename.endsWith('.js') ? middlewareFilename : `${middlewareFilename}.js`))
-
-        const middlewarePathnames = middlewareFilenames
-          .flatMap(middlewareFilename => this.getModulesRecursively({ parent: this.options.paths.middlewares, filename: middlewareFilename }))
-          .filter(Boolean)
-
-        // Load Middlewares
-        for (const middlewarePathname of middlewarePathnames) {
-          const ImplMiddleware = await this.loadModule({ pathname: middlewarePathname })
-          const implMiddleware = new ImplMiddleware()
-
-          if (!middlewareEnumTypes.includes(implMiddleware.type)) {
-            warn(
-              `"${ImplMiddleware.name}" Middleware Type Is Incorrect. Type Must Be One Of ${middlewareEnumTypes
-                .map(type => `"${type}"`)
-                .join(', ')}. This Middleware Will Setted Default Type "${Middleware.ENUM.TYPES.POST}".`
-            )
-            implMiddleware.type = Middleware.ENUM.TYPES.POST
-          }
-
-          implMiddleware._$rapidfire = this
-          implMiddleware._controller = this.controllers.find(controller => controller instanceof ImplMiddleware.controller)
-
-          this.middlewares.push(implMiddleware)
-        }
-      }
+      if (this.options.paths.middlewares) await this.loadMiddlewares()
 
       // ------------------------ Init Pre Middlewares And Connect Pipelines To Express
-      for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.PRE)) {
-        await middleware.init()
-
-        for (const { pattern, method, pipe } of middleware.pipelines) {
-          if (pipe instanceof Function || Array.isArray(pipe)) {
-            const binder = this.express[method] || this.express.use
-
-            if (pattern) binder.call(this.express, pattern, pipe)
-            else binder.call(this.express, pipe)
-          }
-        }
-      }
+      if (this.preMiddlewares.length) await this.installMiddlewares({ middlewares: this.preMiddlewares })
 
       // ------------------------ Install Controller / Bind Service
-      if (this.options.paths.services) {
-        const serviceFilenames = fs.readdirSync(this.options.paths.services)
-
-        const servicePathnames = serviceFilenames
-          .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))
-          .filter(Boolean)
-
-        // Load Services
-        for (const servicePathname of servicePathnames) {
-          const Service = await this.loadModule({ pathname: servicePathname })
-
-          const controller = this.controllers.find(controller => controller instanceof Service.controller)
-          const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
-
-          const router = express.Router()
-
-          const service = await serviceLoader.getInstance({ router, Service, controller })
-
-          service._$rapidfire = this
-          service._controller = controller
-          service._router = router
-
-          if (service._router.stack.length) this.express.use(service._router)
-
-          this.services.push(service)
-        }
-
-        // Init Services
-        for (const service of this.services) {
-          await service.init()
-          await service.load()
-        }
-      }
+      if (this.options.paths.services) await this.installServices()
 
       // ------------------------ Init Post Middlewares And Connect Pipelines To Express
-      for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.POST)) {
-        await middleware.init()
-        await middleware.load()
-
-        for (const { pattern, method, pipe } of middleware.pipelines) {
-          if (pipe instanceof Function || Array.isArray(pipe)) {
-            const binder = this.express[method] || this.express.use
-
-            if (pattern) binder.call(this.express, pattern, pipe)
-            else binder.call(this.express, pipe)
-          }
-        }
-      }
+      if (this.postMiddlewares.length) await this.installMiddlewares({ middlewares: this.postMiddlewares })
 
       // ------------------------ Init Error Handler Middlewares And Connect Pipelines To Express
-      for (const middleware of this.middlewares.filter(({ type }) => type === Middleware.ENUM.TYPES.ERROR)) {
-        await middleware.init()
-        await middleware.load()
-
-        for (const { pipe } of middleware.pipelines) {
-          if (pipe instanceof Function || Array.isArray(pipe)) {
-            this.express.use(pipe)
-          }
-        }
-      }
+      if (this.errorHandlers.length) await this.installErrorHandlers({ errorHandlers: this.errorHandlers })
     } catch (err) {
       error(err)
       throw err
@@ -422,35 +521,12 @@ class RapidFire extends EventEmitter {
       res.status(err.code || 500).send(err.message)
     })
 
-    const afterListen = () => {
-      debug(`Server listening on http${this.options.tls ? 's' : ''}://${this.options.host}:${this.options.port}`)
-
-      /**
-       * Server Is Ready To Listen
-       *
-       * @event RapidFire#open
-       */
-      this.emit('open')
-      this.isReady = true
-    }
-
     if (this.options.tls) this.server = https.createServer(this.options.tls, this.express)
     else this.server = http.createServer(this.express)
 
-    this.server.on('close', () => {
-      this.server = null
-      debug('Server Closed.')
+    this.server.on('close', this.onClose)
 
-      /**
-       * HttpServer Is Stop To Listen
-       *
-       * @event RapidFire#close
-       */
-      this.emit('close')
-      this.isReady = false
-    })
-
-    this.server.listen(this.options.port, this.options.host, afterListen)
+    this.server.listen(this.options.port, this.options.host, this.onListen)
   }
 
   /**
@@ -508,4 +584,12 @@ class RapidFire extends EventEmitter {
   }
 }
 
+/* **************************************************************************
+ *      ██████╗   ███████╗  ████████╗  ██╗   ██╗  ██████╗   ███╗   ██╗      *
+ *      ██╔══██╗  ██╔════╝  ╚══██╔══╝  ██║   ██║  ██╔══██╗  ████╗  ██║      *
+ *      ██████╔╝  █████╗       ██║     ██║   ██║  ██████╔╝  ██╔██╗ ██║      *
+ *      ██╔══██╗  ██╔══╝       ██║     ██║   ██║  ██╔══██╗  ██║╚██╗██║      *
+ *      ██║  ██║  ███████╗     ██║     ╚██████╔╝  ██║  ██║  ██║ ╚████║      *
+ *      ╚═╝  ╚═╝  ╚══════╝     ╚═╝      ╚═════╝   ╚═╝  ╚═╝  ╚═╝  ╚═══╝      *
+ ************************************************************************** */
 module.exports = RapidFire
