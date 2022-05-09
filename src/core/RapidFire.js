@@ -524,9 +524,9 @@ class RapidFire extends EventEmitter {
     if (this.options.tls) this.server = https.createServer(this.options.tls, this.express)
     else this.server = http.createServer(this.express)
 
-    this.server.on('close', this.onClose)
+    this.server.on('close', () => this.onClose())
 
-    this.server.listen(this.options.port, this.options.host, this.onListen)
+    this.server.listen(this.options.port, this.options.host, () => this.onListen())
   }
 
   /**
