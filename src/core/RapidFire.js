@@ -6,7 +6,6 @@
  *   ██║  ██║ ╚═╝ ██║  ██║       ╚██████╔╝  ██║  ██║     ██║     ███████║   *
  *   ╚═╝  ╚═╝     ╚═╝  ╚═╝        ╚═════╝   ╚═╝  ╚═╝     ╚═╝     ╚══════╝   *
  ************************************************************************** */
-
 const fs = require('fs')
 const path = require('path')
 
@@ -60,6 +59,7 @@ const middlewareEnumTypes = Object.values(Middleware.ENUM.TYPES)
  * @property  {Array}     tls                  [TLS Connection Options](https://nodejs.org/dist/latest/docs/api/tls.html#tlsconnectoptions-callback)
  * @property  {Array}     bodyParser           [body-parser](https://www.npmjs.com/package/body-parser) "json()" Options
  * @property  {Array}     querystringParser    The Querystring Parameter Value As `Key`. Convert To Datatype And Value As `Value`. e.g.) If You Setted `{ 'null': 0 }`. `/api?b=null` => req.query.b === 0
+ * @property  {Boolean}   listenAuto           RapidFire Start Listen Automatically
  */
 
 /**
@@ -88,12 +88,14 @@ class RapidFire extends EventEmitter {
       isDev: process.env.NODE_ENV !== 'production',
       paths: {
         controllers: '',
+        schemes: '',
         services: '',
         middlewares: '',
         loaders: '',
       },
       middlewares: [],
       services: [],
+      schemes: [],
       bodyParser: { limit: '50mb' },
       tls: false, // https://nodejs.org/dist/latest/docs/api/tls.html#tlsconnectoptions-callback
       querystringParser: {
@@ -113,7 +115,7 @@ class RapidFire extends EventEmitter {
    *
    * @param  {RapidFireOptions}
    */
-  constructor({ dbs = [], app = {}, ...options } = {}) {
+  constructor({ dbs = [], app = {}, listenAuto = true, ...options } = {}) {
     super()
 
     let customOptions = {}
@@ -191,12 +193,21 @@ class RapidFire extends EventEmitter {
     this.services = []
 
     /**
+     * RapidFire Framework Running Schemes
+     *
+     * @member
+     * @type {Array}
+     */
+    this.schemes = []
+
+    /**
      * RapidFire Framework Running Middleware Instances
      *
      * @member
      * @type {Array}
      */
     this.middlewares = []
+
     /**
      * RapidFire Framework Running pre Middleware Instances
      *
@@ -224,6 +235,7 @@ class RapidFire extends EventEmitter {
     const defaultServiceLoader = new ServiceLoader()
     defaultServiceLoader._$rapidfire = this
     defaultServiceLoader._controller = defaultController
+
     /**
      * RapidFire Framework Running ServiceLoader Instances
      *
@@ -247,6 +259,14 @@ class RapidFire extends EventEmitter {
      * @type {Boolean}
      */
     this.isReady = false
+
+    /**
+     * RapidFire Framework Start Listen Automatically
+     *
+     * @member
+     * @type {Boolean}
+     */
+    this.listenAuto = listenAuto
   }
 
   async loadModule({ pathname }) {
@@ -347,6 +367,40 @@ class RapidFire extends EventEmitter {
     }
   }
 
+  async installSchemes() {
+    const schemeFilenames = fs.readdirSync(this.options.paths.schemes)
+
+    const schemePathnames = schemeFilenames
+      .flatMap(schemeFilename => this.getModulesRecursively({ parent: this.options.paths.schemes, filename: schemeFilename }))
+      .filter(Boolean)
+
+    // Load Schemes
+    for (const schemePathname of schemePathnames) {
+      const Scheme = await this.loadModule({ pathname: schemePathname })
+
+      const controller = this.controllers.find(controller => controller instanceof Scheme.controller)
+      const serviceLoader = this.loaders.find(loader => loader instanceof Scheme.loader)
+
+      const router = express.Router()
+
+      const scheme = await serviceLoader.getInstance({ router, Service: Scheme, controller })
+
+      scheme._$rapidfire = this
+      scheme._controller = controller
+      scheme._router = router
+
+      if (scheme._router.stack.length) this.express.use(scheme._router)
+
+      this.schemes.push(scheme)
+    }
+
+    // Init Schemes
+    for (const scheme of this.schemes) {
+      await scheme.init()
+      await scheme.load()
+    }
+  }
+
   async installServices() {
     const serviceFilenames = fs.readdirSync(this.options.paths.services)
 
@@ -443,7 +497,7 @@ class RapidFire extends EventEmitter {
     debug(`Server listening on http${this.options.tls ? 's' : ''}://${this.options.host}:${this.options.port}`)
 
     /**
-     * Server Is Ready To Listen
+     * Server Has Started To Listen
      *
      * @event RapidFire#open
      */
@@ -456,7 +510,7 @@ class RapidFire extends EventEmitter {
     debug('Server Closed.')
 
     /**
-     * HttpServer Is Stop To Listen
+     * Server Was Stopped To Listen
      *
      * @event RapidFire#close
      */
@@ -492,6 +546,9 @@ class RapidFire extends EventEmitter {
       // ------------------------ Init Pre Middlewares And Connect Pipelines To Express
       if (this.preMiddlewares.length) await this.installMiddlewares({ middlewares: this.preMiddlewares })
 
+      // ------------------------ Install Schemes
+      if (this.options.paths.schemes) await this.installSchemes()
+
       // ------------------------ Install Controller / Bind Service
       if (this.options.paths.services) await this.installServices()
 
@@ -526,7 +583,14 @@ class RapidFire extends EventEmitter {
 
     this.server.on('close', () => this.onClose())
 
-    this.server.listen(this.options.port, this.options.host, () => this.onListen())
+    /**
+     * Server Is Ready To Start Listen
+     *
+     * @event RapidFire#beforeOpen
+     */
+    this.emit('beforeOpen')
+
+    if (this.listenAuto) this.server.listen(this.options.port, this.options.host, () => this.onListen())
   }
 
   /**
