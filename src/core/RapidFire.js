@@ -199,7 +199,7 @@ class RapidFire extends EventEmitter {
     this.middlewares = []
 
     /**
-     * RapidFire Framework Running pre Middleware Instances
+     * RapidFire Framework Running Pre Middleware Instances
      *
      * @member
      * @type {Array}
