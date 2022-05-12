@@ -340,8 +340,6 @@ class RapidFire extends EventEmitter {
 
       this.middlewares.push(implMiddleware)
 
-      console.info(ImplMiddleware)
-
       switch (ImplMiddleware.type) {
         case Middleware.ENUM.TYPES.PRE: {
           this.preMiddlewares.push(implMiddleware)
