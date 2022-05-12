@@ -6,7 +6,6 @@
  *   ██║  ██║ ╚═╝ ██║  ██║       ╚██████╔╝  ██║  ██║     ██║     ███████║   *
  *   ╚═╝  ╚═╝     ╚═╝  ╚═╝        ╚═════╝   ╚═╝  ╚═╝     ╚═╝     ╚══════╝   *
  ************************************************************************** */
-
 const fs = require('fs')
 const path = require('path')
 
@@ -60,6 +59,7 @@ const middlewareEnumTypes = Object.values(Middleware.ENUM.TYPES)
  * @property  {Array}     tls                  [TLS Connection Options](https://nodejs.org/dist/latest/docs/api/tls.html#tlsconnectoptions-callback)
  * @property  {Array}     bodyParser           [body-parser](https://www.npmjs.com/package/body-parser) "json()" Options
  * @property  {Array}     querystringParser    The Querystring Parameter Value As `Key`. Convert To Datatype And Value As `Value`. e.g.) If You Setted `{ 'null': 0 }`. `/api?b=null` => req.query.b === 0
+ * @property  {Boolean}   listenAuto           RapidFire Start Listen Automatically
  */
 
 /**
@@ -113,7 +113,7 @@ class RapidFire extends EventEmitter {
    *
    * @param  {RapidFireOptions}
    */
-  constructor({ dbs = [], app = {}, ...options } = {}) {
+  constructor({ dbs = [], app = {}, listenAuto = true, ...options } = {}) {
     super()
 
     let customOptions = {}
@@ -197,6 +197,7 @@ class RapidFire extends EventEmitter {
      * @type {Array}
      */
     this.middlewares = []
+
     /**
      * RapidFire Framework Running pre Middleware Instances
      *
@@ -224,6 +225,7 @@ class RapidFire extends EventEmitter {
     const defaultServiceLoader = new ServiceLoader()
     defaultServiceLoader._$rapidfire = this
     defaultServiceLoader._controller = defaultController
+
     /**
      * RapidFire Framework Running ServiceLoader Instances
      *
@@ -247,6 +249,14 @@ class RapidFire extends EventEmitter {
      * @type {Boolean}
      */
     this.isReady = false
+
+    /**
+     * RapidFire Framework Start Listen Automatically
+     *
+     * @member
+     * @type {Boolean}
+     */
+    this.listenAuto = listenAuto
   }
 
   async loadModule({ pathname }) {
@@ -329,6 +339,8 @@ class RapidFire extends EventEmitter {
       implMiddleware._controller = this.controllers.find(controller => controller instanceof ImplMiddleware.controller)
 
       this.middlewares.push(implMiddleware)
+
+      console.info(ImplMiddleware)
 
       switch (ImplMiddleware.type) {
         case Middleware.ENUM.TYPES.PRE: {
@@ -443,7 +455,7 @@ class RapidFire extends EventEmitter {
     debug(`Server listening on http${this.options.tls ? 's' : ''}://${this.options.host}:${this.options.port}`)
 
     /**
-     * Server Is Ready To Listen
+     * Server Has Started To Listen
      *
      * @event RapidFire#open
      */
@@ -456,7 +468,7 @@ class RapidFire extends EventEmitter {
     debug('Server Closed.')
 
     /**
-     * HttpServer Is Stop To Listen
+     * Server Was Stopped To Listen
      *
      * @event RapidFire#close
      */
@@ -526,7 +538,14 @@ class RapidFire extends EventEmitter {
 
     this.server.on('close', () => this.onClose())
 
-    this.server.listen(this.options.port, this.options.host, () => this.onListen())
+    /**
+     * Server Is Ready To Start Listen
+     *
+     * @event RapidFire#beforeOpen
+     */
+    this.emit('beforeOpen')
+
+    if (this.listenAuto) this.server.listen(this.options.port, this.options.host, () => this.onListen())
   }
 
   /**
