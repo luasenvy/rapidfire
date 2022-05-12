@@ -88,14 +88,12 @@ class RapidFire extends EventEmitter {
       isDev: process.env.NODE_ENV !== 'production',
       paths: {
         controllers: '',
-        schemes: '',
         services: '',
         middlewares: '',
         loaders: '',
       },
       middlewares: [],
       services: [],
-      schemes: [],
       bodyParser: { limit: '50mb' },
       tls: false, // https://nodejs.org/dist/latest/docs/api/tls.html#tlsconnectoptions-callback
       querystringParser: {
@@ -191,14 +189,6 @@ class RapidFire extends EventEmitter {
      * @type {Array}
      */
     this.services = []
-
-    /**
-     * RapidFire Framework Running Schemes
-     *
-     * @member
-     * @type {Array}
-     */
-    this.schemes = []
 
     /**
      * RapidFire Framework Running Middleware Instances
@@ -350,6 +340,8 @@ class RapidFire extends EventEmitter {
 
       this.middlewares.push(implMiddleware)
 
+      console.info(ImplMiddleware)
+
       switch (ImplMiddleware.type) {
         case Middleware.ENUM.TYPES.PRE: {
           this.preMiddlewares.push(implMiddleware)
@@ -364,40 +356,6 @@ class RapidFire extends EventEmitter {
           break
         }
       }
-    }
-  }
-
-  async installSchemes() {
-    const schemeFilenames = fs.readdirSync(this.options.paths.schemes)
-
-    const schemePathnames = schemeFilenames
-      .flatMap(schemeFilename => this.getModulesRecursively({ parent: this.options.paths.schemes, filename: schemeFilename }))
-      .filter(Boolean)
-
-    // Load Schemes
-    for (const schemePathname of schemePathnames) {
-      const Scheme = await this.loadModule({ pathname: schemePathname })
-
-      const controller = this.controllers.find(controller => controller instanceof Scheme.controller)
-      const serviceLoader = this.loaders.find(loader => loader instanceof Scheme.loader)
-
-      const router = express.Router()
-
-      const scheme = await serviceLoader.getInstance({ router, Service: Scheme, controller })
-
-      scheme._$rapidfire = this
-      scheme._controller = controller
-      scheme._router = router
-
-      if (scheme._router.stack.length) this.express.use(scheme._router)
-
-      this.schemes.push(scheme)
-    }
-
-    // Init Schemes
-    for (const scheme of this.schemes) {
-      await scheme.init()
-      await scheme.load()
     }
   }
 
@@ -545,9 +503,6 @@ class RapidFire extends EventEmitter {
 
       // ------------------------ Init Pre Middlewares And Connect Pipelines To Express
       if (this.preMiddlewares.length) await this.installMiddlewares({ middlewares: this.preMiddlewares })
-
-      // ------------------------ Install Schemes
-      if (this.options.paths.schemes) await this.installSchemes()
 
       // ------------------------ Install Controller / Bind Service
       if (this.options.paths.services) await this.installServices()
