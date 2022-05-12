@@ -570,6 +570,9 @@ class RapidFire extends EventEmitter {
     this.controllers = this.controllers.filter(controller => controller instanceof Controller)
     this.services = []
     this.middlewares = []
+    this.preMiddlewares = []
+    this.postMiddlewares = []
+    this.errorHandlers = []
     this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
 
     if (this.server) this.server.close()
