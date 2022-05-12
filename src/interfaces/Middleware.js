@@ -16,15 +16,7 @@ const EventEmitter = require('events')
  *     EventEmitter --> Middleware;
  */
 class Middleware extends EventEmitter {
-  /**
-   * Controller Class
-   *
-   * @static
-   * @type {Controller}
-   */
-  static controller = Controller
-
-  static _ENUM = {
+  static ENUM = {
     TYPES: {
       PRE: 'pre',
       POST: 'post',
@@ -32,9 +24,21 @@ class Middleware extends EventEmitter {
     },
   }
 
-  static get ENUM() {
-    return this._ENUM
-  }
+  /**
+   * Middleware Type
+   *
+   * @static
+   * @type {String}
+   */
+  static type = Middleware.ENUM.TYPES.PRE
+
+  /**
+   * Controller Class
+   *
+   * @static
+   * @type {Controller}
+   */
+  static controller = Controller
 
   /** Create Middleware */
   constructor() {
