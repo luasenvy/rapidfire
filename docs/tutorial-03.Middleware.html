@@ -210,10 +210,10 @@ It Is Divided Between Before And After Based On When The <code>Service</code> Lo
 } = require('@luasenvy/rapidfire')
 
 class MyMiddleware extends Middleware {
-  constructor() {
-    // Set Middleware Type
-    this.type = Middleware.ENUM.TYPES.PRE
-  }
+  // Set Middleware Type
+  static type = Middleware.ENUM.TYPES.PRE
+
+  constructor() {}
 }
 
 module.exports = MyMiddleware

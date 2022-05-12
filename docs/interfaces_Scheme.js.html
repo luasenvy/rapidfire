@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>:: RapidFire :: Express Based WebServer Framework Controller</title>
+  <title>:: RapidFire :: Express Based WebServer Framework interfaces/Scheme.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -146,201 +148,116 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Interface</p>
-                    <h1>Controller</h1>
+                    <p>Source</p>
+                    <h1>interfaces/Scheme.js</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
     
-        <h2>Controller</h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description"><script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script><div class="mermaid">graph TD;
-    EventEmitter --> Controller;</div></div>
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="interfaces_Controller.js.html" class="button">View Source</a>
-            <span>
-                <a href="interfaces_Controller.js.html">interfaces/Controller.js</a>, <a href="interfaces_Controller.js.html#line10">line 10</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-        
-    
-    </div>
-    
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li>EventEmitter</li>
-    </ul>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <div class='vertical-section'>
-            <h1>Members</h1>
-            <div class="members">
-            
-                <div class="member">
-
-    <span class="method-parameter is-pulled-right">
-        <label>Type:</label>
-        
-<span class="param-type"><a href="RapidFire.html">RapidFire</a></span>
-
-
-    </span>
-
-<h4 class="name" id="$rapidfire">
-    <a class="href-link" href="#$rapidfire">#</a>
-    
-        
-            <span class='tag'>readonly</span>
-        
-    
-    <span class="code-name">
-        $rapidfire
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <script type="text/javascript" src="https://unpkg.com/mermaid@7.1.0/dist/mermaid.min.js"></script>Running RapidFire Instance
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="interfaces_Controller.js.html" class="button">View Source</a>
-            <span>
-                <a href="interfaces_Controller.js.html">interfaces/Controller.js</a>, <a href="interfaces_Controller.js.html#line27">line 27</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-            </div>
-        </div>
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const path = require('path')
+
+const Service = require('./Service')
+
+/**
+ * @interface
+ * @extends EventEmitter
+ * @mermaid
+ *   graph TD;
+ *     EventEmitter --> Service;
+ *     Service --> Scheme;
+ */
+class Scheme extends Service {
+  static id = ''
+
+  static crudify = true
+
+  static basepath = ''
+
+  /** Create Scheme */
+  constructor({ router }) {
+    super()
+
+    const { id, crudify, basepath } = this.constructor
+
+    if (id &amp;&amp; crudify) {
+      router.get(path.join(basepath, id), (req, res, next) => this.getList(req, res).catch(next))
+      router.get(path.join(basepath, id, ':id'), (req, res, next) => this.getObject(req, res).catch(next))
+      router.post(path.join(basepath, id), (req, res, next) => this.create(req, res).catch(next))
+      router.put(path.join(basepath, id), (req, res, next) => this.update(req, res).catch(next))
+      router.delete(path.join(basepath, id, ':id'), (req, res, next) => this.delete(req, res).catch(next))
+    }
+  }
+
+  get db() {
+    return this.$rapidfire.dbs[0]
+  }
+
+  async list() {
+    return {}
+  }
+  async object({ id }) {
+    return {}
+  }
+  async create() {
+    return {}
+  }
+  async update() {
+    return {}
+  }
+  async remove({ id }) {
+    return {}
+  }
+
+  async getList(req, res) {
+    return res.json(await this.list())
+  }
+  async getObject(req, res) {
+    const { id } = req.params
+    return res.json(await this.object({ id }))
+  }
+  async create(req, res) {
+    const { createdId } = await this.create()
+
+    return res.json({ createdId })
+  }
+  async update(req, res) {
+    await this.update()
+
+    res.sendStatus(204)
+  }
+  async delete(req, res) {
+    const { id } = req.params
+
+    await this.remove({ id })
+
+    return res.json()
+  }
+
+  async load() {
+    this.isReady = true
+
+    /**
+     * RapidFire Scheme Is Loaded
+     *
+     * @event RapidFire#Scheme:load
+     */
+    this.emit('scheme:load', { scheme: this })
+  }
+
+  on(eventName, callback) {
+    if ('scheme:load' === eventName &amp;&amp; this.isReady) return callback({ scheme: this })
+    return super.on(eventName, callback)
+  }
+}
+
+module.exports = Scheme
+</code></pre>
+        </article>
+    </section>
 
 
 
