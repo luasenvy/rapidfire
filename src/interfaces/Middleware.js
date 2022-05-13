@@ -18,9 +18,9 @@ const EventEmitter = require('events')
 class Middleware extends EventEmitter {
   static ENUM = {
     TYPES: {
-      PRE: 'pre',
-      POST: 'post',
-      ERROR: 'error',
+      PRE: 0,
+      POST: 1,
+      ERROR: 2,
     },
   }
 
