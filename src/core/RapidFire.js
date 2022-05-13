@@ -535,9 +535,9 @@ class RapidFire extends EventEmitter {
     /**
      * Server Is Ready To Start Listen
      *
-     * @event RapidFire#beforeOpen
+     * @event RapidFire#before:open
      */
-    this.emit('beforeOpen', this)
+    this.emit('before:open', this)
 
     if (this.listenAuto) this.server.listen(this.options.port, this.options.host, () => this.onListen())
   }
