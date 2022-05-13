@@ -156,17 +156,48 @@
 <h3>Rapidfire Instance Listen Event</h3>
 <pre class="prettyprint source lang-javascript"><code>const rapidfire = new RapidFire()
 
+rapidfire.on('before:open', () => console.info('HttpServer Ready To Listen'))
 rapidfire.on('open', () => console.info('HttpServer Start To Listen With 0000 Port.'))
 rapidfire.on('close', () => console.info('HttpServer Closed.'))
 rapidfire.on('request:error', err => console.error(err, 'Something Wrong In Progress Request. :('))
 
 try {
   rapidfire.ignition()
-} catch(err) {
+} catch (err) {
   // Occurred Error When Ignition.
   console.error(err)
   throw err
 }
+</code></pre>
+<p>Keep In Mind That <code>before:open</code> Event Works Asynchronously.
+If You Want Synchronously Processing Before 'open', You Can Start A HttpServer Manullay With <code>listenAuto</code> Option.</p>
+<pre class="prettyprint source lang-javascript"><code>const rapidfire = new RapidFire({ listenAuto: false })
+
+rapidfire.on('before:open', ({ options }) => {
+  // Do Something...
+
+  // And Start Listen Manually
+  rapidfire.server.listen(options.port, options.host, () => rapidfire.onListen())
+})
+</code></pre>
+<p>You Must To Know, If You Do Not Use Built-in <code>onListen()</code> Method <code>open</code> Event Is Not Called.
+In This Case, Set The isReady Flag To <code>true</code> And Emit The Event Manually Or Just Put Code In Callback:</p>
+<pre class="prettyprint source lang-javascript"><code>const rapidfire = new RapidFire({ listenAuto: false })
+
+rapidfire.on('before:open', ({ options }) => {
+  // Do Something...
+
+  // And Start Listen Manually
+  rapidfire.server.listen(options.port, options.host, () => {
+    // Do Something Else...
+
+    // Emit Event A Manually
+    rapidfire.emit('open')
+
+    // Set The isReady Flag To `true`
+    rapidfire.isReady = true
+  })
+})
 </code></pre>
 <h3>Rapidfire.Service Instance Listen Event</h3>
 <pre class="prettyprint source lang-javascript"><code>const serviceInstance = this.$rapidfire.services.find(service => 'MyService' === service.constructor.name)

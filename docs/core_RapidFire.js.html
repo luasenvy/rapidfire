@@ -141,7 +141,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Modules.html">Modules</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Scheme.html">Scheme</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:controller:load">controller:load</a></li><li><a href="RapidFire.html#event:beforeOpen">beforeOpen</a></li><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li><li><a href="RapidFire.html#event:middleware:load">middleware:load</a></li><li><a href="RapidFire.html#event:request:error">request:error</a></li><li><a href="RapidFire.html#event:Scheme:load">Scheme:load</a></li><li><a href="RapidFire.html#event:service:load">service:load</a></li><li><a href="RapidFire.html#event:serviceLoader:load">serviceLoader:load</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-Modules.html">Modules</a></li></ul><h3>Classes</h3><ul><li><a href="RapidFire.html">RapidFire</a></li></ul><h3>Interfaces</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Middleware.html">Middleware</a></li><li><a href="Service.html">Service</a></li><li><a href="ServiceLoader.html">ServiceLoader</a></li></ul><h3>Events</h3><ul><li><a href="RapidFire.html#event:controller:load">controller:load</a></li><li><a href="RapidFire.html#event:beforeOpen">beforeOpen</a></li><li><a href="RapidFire.html#event:close">close</a></li><li><a href="RapidFire.html#event:open">open</a></li><li><a href="RapidFire.html#event:middleware:load">middleware:load</a></li><li><a href="RapidFire.html#event:request:error">request:error</a></li><li><a href="RapidFire.html#event:service:load">service:load</a></li><li><a href="RapidFire.html#event:serviceLoader:load">serviceLoader:load</a></li></ul><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -359,7 +359,7 @@ class RapidFire extends EventEmitter {
     this.middlewares = []
 
     /**
-     * RapidFire Framework Running pre Middleware Instances
+     * RapidFire Framework Running Pre Middleware Instances
      *
      * @member
      * @type {Array}
@@ -423,15 +423,18 @@ class RapidFire extends EventEmitter {
     return require(pathname)
   }
 
+  getStructureModulePathnames({ dirname }) {
+    let moduleFilenames = fs.readdirSync(dirname)
+
+    return moduleFilenames.flatMap(moduleFilename => this.getModulesRecursively({ parent: dirname, filename: moduleFilename })).filter(Boolean)
+  }
+
   async loadControllers() {
-    const controllerFilenames = fs.readdirSync(this.options.paths.controllers)
+    const controllerFilepaths = this.getStructureModulePathnames({ dirname: this.options.paths.controllers })
 
-    const controllerPathnames = controllerFilenames
-      .flatMap(controllerFilename => this.getModulesRecursively({ parent: this.options.paths.controllers, filename: controllerFilename }))
-      .filter(Boolean)
-
-    for (const controllerPathname of controllerPathnames) {
-      const Controller = await this.loadModule({ pathname: controllerPathname })
+    // Load Controllers
+    for (const controllerFilepath of controllerFilepaths) {
+      const Controller = await this.loadModule({ pathname: controllerFilepath })
       const controller = new Controller()
 
       // Register Middleware Default Variables
@@ -448,14 +451,11 @@ class RapidFire extends EventEmitter {
   }
 
   async loadServiceLoaders() {
-    const loaderFilenames = fs.readdirSync(this.options.paths.loaders)
+    const loaderFilepaths = this.getStructureModulePathnames({ dirname: this.options.paths.loaders })
 
-    const loaderPathnames = loaderFilenames
-      .flatMap(loaderFilename => this.getModulesRecursively({ parent: this.options.paths.loaders, filename: loaderFilename }))
-      .filter(Boolean)
-
-    for (const loaderPathname of loaderPathnames) {
-      const Loader = await this.loadModule({ pathname: loaderPathname })
+    // Load Loaders
+    for (const loaderFilepath of loaderFilepaths) {
+      const Loader = await this.loadModule({ pathname: loaderFilepath })
       const loader = new Loader()
 
       // Register Middleware Default Variables
@@ -464,10 +464,40 @@ class RapidFire extends EventEmitter {
       this.loaders.push(loader)
     }
 
-    // Init Loaders
+    // Init Modules
     for (const loader of this.loaders) {
       await loader.init()
       await loader.load()
+    }
+  }
+
+  async installServices() {
+    const serviceFilepaths = this.getStructureModulePathnames({ dirname: this.options.paths.services })
+
+    // Load Services
+    for (const serviceFilepath of serviceFilepaths) {
+      const Service = await this.loadModule({ pathname: serviceFilepath })
+
+      const controller = this.controllers.find(controller => controller instanceof Service.controller)
+      const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
+
+      const router = express.Router()
+
+      const service = await serviceLoader.getInstance({ router, Service, controller })
+
+      service._$rapidfire = this
+      service._controller = controller
+      service._router = router
+
+      if (service._router.stack.length) this.express.use(service._router)
+
+      this.services.push(service)
+    }
+
+    // Init Services
+    for (const service of this.services) {
+      await service.init()
+      await service.load()
     }
   }
 
@@ -500,8 +530,6 @@ class RapidFire extends EventEmitter {
 
       this.middlewares.push(implMiddleware)
 
-      console.info(ImplMiddleware)
-
       switch (ImplMiddleware.type) {
         case Middleware.ENUM.TYPES.PRE: {
           this.preMiddlewares.push(implMiddleware)
@@ -516,40 +544,6 @@ class RapidFire extends EventEmitter {
           break
         }
       }
-    }
-  }
-
-  async installServices() {
-    const serviceFilenames = fs.readdirSync(this.options.paths.services)
-
-    const servicePathnames = serviceFilenames
-      .flatMap(serviceFilename => this.getModulesRecursively({ parent: this.options.paths.services, filename: serviceFilename }))
-      .filter(Boolean)
-
-    // Load Services
-    for (const servicePathname of servicePathnames) {
-      const Service = await this.loadModule({ pathname: servicePathname })
-
-      const controller = this.controllers.find(controller => controller instanceof Service.controller)
-      const serviceLoader = this.loaders.find(loader => loader instanceof Service.loader)
-
-      const router = express.Router()
-
-      const service = await serviceLoader.getInstance({ router, Service, controller })
-
-      service._$rapidfire = this
-      service._controller = controller
-      service._router = router
-
-      if (service._router.stack.length) this.express.use(service._router)
-
-      this.services.push(service)
-    }
-
-    // Init Services
-    for (const service of this.services) {
-      await service.init()
-      await service.load()
     }
   }
 
@@ -703,7 +697,7 @@ class RapidFire extends EventEmitter {
      *
      * @event RapidFire#beforeOpen
      */
-    this.emit('beforeOpen')
+    this.emit('beforeOpen', this)
 
     if (this.listenAuto) this.server.listen(this.options.port, this.options.host, () => this.onListen())
   }
@@ -732,6 +726,9 @@ class RapidFire extends EventEmitter {
     this.controllers = this.controllers.filter(controller => controller instanceof Controller)
     this.services = []
     this.middlewares = []
+    this.preMiddlewares = []
+    this.postMiddlewares = []
+    this.errorHandlers = []
     this.loaders = this.loaders.filter(loader => loader instanceof ServiceLoader)
 
     if (this.server) this.server.close()
