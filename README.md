@@ -24,9 +24,11 @@ rapidFire.ignition()
 
 # Benefit
 
-- Use `Express` And `ESModule` Only.
+- Lightweight
+  - Depends On: `express`, `body-parser`, `debug` Only.
 - Make Directory Structure What You Need.
-- Making Project Structure Rapidly.
+- Making Project Skeleton Rapidly.
+- Friendly Structure Module Concept
 - Simple Lifecycle.
 
 # Roadmap
