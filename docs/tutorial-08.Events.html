@@ -199,6 +199,11 @@ rapidfire.on('before:open', ({ options }) => {
   })
 })
 </code></pre>
+<h3>Rapidfire.Controller Instance Listen Event</h3>
+<pre class="prettyprint source lang-javascript"><code>const serviceInstance = this.$rapidfire.services.find(service => 'MyService' === service.constructor.name)
+
+serviceInstance.on('controller:load', () => console.info('MyService Is Loaded.'))
+</code></pre>
 <h3>Rapidfire.Service Instance Listen Event</h3>
 <pre class="prettyprint source lang-javascript"><code>const serviceInstance = this.$rapidfire.services.find(service => 'MyService' === service.constructor.name)
 
@@ -207,7 +212,7 @@ serviceInstance.on('service:load', () => console.info('MyService Is Loaded.'))
 <h3>Rapidfire.Middleware Instance Listen Event</h3>
 <pre class="prettyprint source lang-javascript"><code>const middlewareInstance = this.$rapidfire.middlewares.find(middleware => 'MyMiddleware' === middleware.constructor.name)
 
-middlewareInstance.on('service:load', () => console.info('MyMiddleware Is Loaded.'))
+middlewareInstance.on('middleware:load', () => console.info('MyMiddleware Is Loaded.'))
 </code></pre>
 <h3>Rapidfire.ServiceLoader Instance Listen Event</h3>
 <pre class="prettyprint source lang-javascript"><code>const serviceLoaderInstance = this.$rapidfire.serviceLoaders.find(serviceLoader => 'MyServiceLoader' === serviceLoader.constructor.name)
