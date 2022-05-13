@@ -1,4 +1,4 @@
-const { Service } = require('../../src/interfaces')
+const { Service } = require('../../../src/interfaces')
 
 const MyServiceLoader = require('../loaders/MyServiceLoader')
 const MyController = require('../controllers/MyController')

@@ -1,27 +1,88 @@
+/* **************************************************************************
+ *   ██╗  ███╗   ███╗  ██████╗    ██████╗   ██████╗   ████████╗  ███████╗   *
+ *   ██║  ████╗ ████║  ██╔══██╗  ██╔═══██╗  ██╔══██╗  ╚══██╔══╝  ██╔════╝   *
+ *   ██║  ██╔████╔██║  ██████╔╝  ██║   ██║  ██████╔╝     ██║     ███████╗   *
+ *   ██║  ██║╚██╔╝██║  ██╔═══╝   ██║   ██║  ██╔══██╗     ██║     ╚════██║   *
+ *   ██║  ██║ ╚═╝ ██║  ██║       ╚██████╔╝  ██║  ██║     ██║     ███████║   *
+ *   ╚═╝  ╚═╝     ╚═╝  ╚═╝        ╚═════╝   ╚═╝  ╚═╝     ╚═╝     ╚══════╝   *
+ ************************************************************************** */
 const fs = require('fs')
 const path = require('path')
 
-const tlsCert = fs.readFileSync(path.join(__dirname, './certs/cert.crt'))
-const tlsKey = fs.readFileSync(path.join(__dirname, './certs/cert.key'))
-
 const { RapidFire } = require('../src/index.js')
 
+/* **************************************************************************
+ *                  ██╗   ██╗   █████╗   ██████╗   ███████╗                 *
+ *                  ██║   ██║  ██╔══██╗  ██╔══██╗  ██╔════╝                 *
+ *                  ██║   ██║  ███████║  ██████╔╝  ███████╗                 *
+ *                  ╚██╗ ██╔╝  ██╔══██║  ██╔══██╗  ╚════██║                 *
+ *                   ╚████╔╝   ██║  ██║  ██║  ██║  ███████║                 *
+ *                    ╚═══╝    ╚═╝  ╚═╝  ╚═╝  ╚═╝  ╚══════╝                 *
+ ************************************************************************** */
+const tlsCert = fs.readFileSync(path.join(__dirname, './server/certs/cert.crt'))
+const tlsKey = fs.readFileSync(path.join(__dirname, './server/certs/cert.key'))
+
 const rapidFire = new RapidFire({
+  host: 'localhost',
+  port: 8000,
+  tls: { cert: tlsCert, key: tlsKey },
+})
+
+const tlsRapidFire = new RapidFire({
   host: 'localhost',
   port: 8443,
   tls: { cert: tlsCert, key: tlsKey },
 })
 
-test('RapidFire Ignition Test', done => {
-  let count = 0
+/* **************************************************************************
+ *                      ██████╗   ██╗   ██╗  ███╗   ██╗                     *
+ *                      ██╔══██╗  ██║   ██║  ████╗  ██║                     *
+ *                      ██████╔╝  ██║   ██║  ██╔██╗ ██║                     *
+ *                      ██╔══██╗  ██║   ██║  ██║╚██╗██║                     *
+ *                      ██║  ██║  ╚██████╔╝  ██║ ╚████║                     *
+ *                      ╚═╝  ╚═╝   ╚═════╝   ╚═╝  ╚═══╝                     *
+ ************************************************************************** */
+describe('RapidFire Bootup & Shutdown Test', () => {
+  test('RapidFire Default Ignition & Extinguish Test', done => {
+    let count = 0
 
-  rapidFire.on('open', rapidFire.extinguish)
-  rapidFire.on('close', () => {
-    count += 1
+    rapidFire.on('open', rapidFire.extinguish)
+    rapidFire.on('close', () => {
+      count += 1
 
-    if (count < 3) return rapidFire.ignition()
-    done()
+      if (count < 3) return rapidFire.ignition()
+
+      expect(count).toEqual(3)
+
+      done()
+    })
+
+    rapidFire.ignition()
   })
 
-  rapidFire.ignition()
+  test('RapidFire TLS Ignition & Extinguish Test', done => {
+    let count = 0
+
+    tlsRapidFire.on('open', tlsRapidFire.extinguish)
+    tlsRapidFire.on('close', () => {
+      count += 1
+
+      if (count < 3) return tlsRapidFire.ignition()
+
+      expect(count).toEqual(3)
+
+      done()
+    })
+
+    tlsRapidFire.ignition()
+  })
 })
+
+/* **************************************************************************
+ *      ██████╗   ███████╗  ████████╗  ██╗   ██╗  ██████╗   ███╗   ██╗      *
+ *      ██╔══██╗  ██╔════╝  ╚══██╔══╝  ██║   ██║  ██╔══██╗  ████╗  ██║      *
+ *      ██████╔╝  █████╗       ██║     ██║   ██║  ██████╔╝  ██╔██╗ ██║      *
+ *      ██╔══██╗  ██╔══╝       ██║     ██║   ██║  ██╔══██╗  ██║╚██╗██║      *
+ *      ██║  ██║  ███████╗     ██║     ╚██████╔╝  ██║  ██║  ██║ ╚████║      *
+ *      ╚═╝  ╚═╝  ╚══════╝     ╚═╝      ╚═════╝   ╚═╝  ╚═╝  ╚═╝  ╚═══╝      *
+ ************************************************************************** */

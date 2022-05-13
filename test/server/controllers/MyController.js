@@ -1,4 +1,4 @@
-const { Controller } = require('../../src/interfaces')
+const { Controller } = require('../../../src/interfaces')
 
 class MyController extends Controller {
   constructor() {

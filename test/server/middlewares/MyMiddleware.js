@@ -1,4 +1,4 @@
-const { Middleware } = require('../../src/interfaces')
+const { Middleware } = require('../../../src/interfaces')
 
 class MyMiddleware extends Middleware {
   constructor() {

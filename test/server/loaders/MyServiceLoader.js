@@ -1,4 +1,4 @@
-const { ServiceLoader } = require('../../src/interfaces')
+const { ServiceLoader } = require('../../../src/interfaces')
 
 class MyServiceLoader extends ServiceLoader {
   constructor() {
